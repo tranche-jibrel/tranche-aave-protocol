@@ -21,9 +21,10 @@ import "./interfaces/IJAave.sol";
 import "./TokenInterface.sol";
 import "./interfaces/IWETHGateway.sol";
 import "./interfaces/IAaveIncentivesController.sol";
+import "./interfaces/IIncentivesController.sol";
 
 
-contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, IJAave {
+contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2, IJAave {
     using SafeMathUpgradeable for uint256;
 
     /**
@@ -84,6 +85,14 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
         aaveIncentiveControllerAddress = _aaveIncentiveController;
         wrappedEthAddress = _wethAddress;
         rewardsToken = _rewardsToken;
+    }
+
+    /**
+     * @dev set incentive rewards address
+     * @param _incentivesController incentives controller contract address
+     */
+    function setincentivesControllerAddress(address _incentivesController) external onlyAdmins {
+        incentivesControllerAddress = _incentivesController;
     }
 
     /**
@@ -408,6 +417,70 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
 
         return tbPrice;
     }
+ 
+    /**
+     * @dev when redemption occurs on tranche A, removing tranche A tokens from staking information (FIFO logic)
+     * @param _trancheNum tranche number
+     * @param _amount amount of redeemed tokens
+     */
+    function decreaseTrancheATokenFromStake(uint256 _trancheNum, uint256 _amount) internal {
+        uint256 senderCounter = stakeCounterTrA[msg.sender][_trancheNum];
+        uint256 tmpAmount = _amount;
+        for (uint i = 1; i <= senderCounter; i++) {
+            StakingDetails storage details = stakingDetailsTrancheA[msg.sender][_trancheNum][i];
+            if (details.amount > 0) {
+                if (details.amount <= tmpAmount) {
+                    tmpAmount = tmpAmount.sub(details.amount);
+                    details.amount = 0;
+                    delete stakingDetailsTrancheA[msg.sender][_trancheNum][i];
+                    // update details number
+                    stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
+                } else {
+                    details.amount = details.amount.sub(tmpAmount);
+                }
+            }
+        }
+    }
+
+    function getSingleTrancheUserStakeCounterTrA(address _user, uint256 _trancheNum) external view override returns (uint256) {
+        return stakeCounterTrA[_user][_trancheNum];
+    }
+
+    function getSingleTrancheUserSingleStakeDetailsTrA(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
+        return (stakingDetailsTrancheA[_user][_trancheNum][_num].startTime, stakingDetailsTrancheA[_user][_trancheNum][_num].amount);
+    }
+
+    /**
+     * @dev when redemption occurs on tranche B, removing tranche B tokens from staking information (FIFO logic)
+     * @param _trancheNum tranche number
+     * @param _amount amount of redeemed tokens
+     */
+    function decreaseTrancheBTokenFromStake(uint256 _trancheNum, uint256 _amount) internal {
+        uint256 senderCounter = stakeCounterTrB[msg.sender][_trancheNum];
+        uint256 tmpAmount = _amount;
+        for (uint i = 1; i <= senderCounter; i++) {
+            StakingDetails storage details = stakingDetailsTrancheB[msg.sender][_trancheNum][i];
+            if (details.amount > 0) {
+                if (details.amount <= tmpAmount) {
+                    tmpAmount = tmpAmount.sub(details.amount);
+                    details.amount = 0;
+                    delete stakingDetailsTrancheB[msg.sender][_trancheNum][i];
+                    // update details number
+                    stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
+                } else {
+                    details.amount = details.amount.sub(tmpAmount);
+                }
+            }
+        }
+    }
+
+    function getSingleTrancheUserStakeCounterTrB(address _user, uint256 _trancheNum) external view override returns (uint256) {
+        return stakeCounterTrB[_user][_trancheNum];
+    }
+
+    function getSingleTrancheUserSingleStakeDetailsTrB(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
+        return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
+    }
 
     /**
      * @dev buy Tranche A Tokens
@@ -441,9 +514,15 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
             uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
             uint256 normAmount = _amount.mul(10 ** diffDec);
             taAmount = normAmount.mul(1e18).div(trancheParameters[_trancheNum].storedTrancheAPrice);
-            //Mint trancheA tokens and send them to msg.sender;
+            //Mint trancheA tokens and send them to msg.sender and notify to incentive controller BEFORE totalSupply updates
+            IIncentivesController(incentivesControllerAddress).trancheANewEnter(msg.sender, trancheAddresses[_trancheNum].ATrancheAddress);
             IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).mint(msg.sender, taAmount);
         }
+
+        stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].add(1);
+        StakingDetails storage details = stakingDetailsTrancheA[msg.sender][_trancheNum][stakeCounterTrA[msg.sender][_trancheNum]];
+        details.startTime = block.timestamp;
+        details.amount = taAmount;
 
         lastActivity[msg.sender] = block.number;
         emit TrancheATokenMinted(_trancheNum, msg.sender, _amount, taAmount);
@@ -477,6 +556,11 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
         uint256 feesAmount = normAmount.sub(userAmount);
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
         
+        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets();
+
+        if (_amount > 0)
+            decreaseTrancheATokenFromStake(_trancheNum, _amount);
+
         IJTrancheTokens(trancheAddresses[_trancheNum].ATrancheAddress).burn(_amount);
         lastActivity[msg.sender] = block.number;
         emit TrancheATokenRedemption(_trancheNum, msg.sender, _amount, userAmount, feesAmount);
@@ -514,10 +598,16 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
 
         uint256 newAaveTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].aTokenAddress);
         if (newAaveTokenBalance > prevAaveTokenBalance) {
-            //Mint trancheB tokens and send them to msg.sender;
+            //Mint trancheB tokens and send them to msg.sender and notify to incentive controller BEFORE totalSupply updates
+            IIncentivesController(incentivesControllerAddress).trancheBNewEnter(msg.sender, trancheAddresses[_trancheNum].BTrancheAddress);
             IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).mint(msg.sender, tbAmount);
         } else 
             tbAmount = 0;
+
+        stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].add(1);
+        StakingDetails storage details = stakingDetailsTrancheB[msg.sender][_trancheNum][stakeCounterTrB[msg.sender][_trancheNum]];
+        details.startTime = block.timestamp;
+        details.amount = tbAmount; 
 
         lastActivity[msg.sender] = block.number;
         emit TrancheBTokenMinted(_trancheNum, msg.sender, _amount, tbAmount);
@@ -550,6 +640,11 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, userAmount, msg.sender);
         uint256 feesAmount = normAmount.sub(userAmount);
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
+
+        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets();
+
+        if (_amount > 0)
+            decreaseTrancheBTokenFromStake(_trancheNum, _amount);
 
         IJTrancheTokens(trancheAddresses[_trancheNum].BTrancheAddress).burn(_amount);
         lastActivity[msg.sender] = block.number;
