@@ -556,7 +556,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         uint256 feesAmount = normAmount.sub(userAmount);
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
         
-        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets();
+        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
 
         if (_amount > 0)
             decreaseTrancheATokenFromStake(_trancheNum, _amount);
@@ -641,7 +641,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         uint256 feesAmount = normAmount.sub(userAmount);
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
 
-        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets();
+        IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
 
         if (_amount > 0)
             decreaseTrancheBTokenFromStake(_trancheNum, _amount);

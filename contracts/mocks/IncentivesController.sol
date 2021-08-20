@@ -16,32 +16,34 @@ contract IncentivesController is OwnableUpgradeable {
     /**
      * @dev claim all rewards from all markets for a single user
      */
-    function claimRewardsAllMarkets() external pure {
-        claimRewardSingleMarketTrA(0);
-        claimRewardSingleMarketTrB(0);
+    function claimRewardsAllMarkets(address _account) external pure {
+        claimRewardSingleMarketTrA(0, _account);
+        claimRewardSingleMarketTrB(0, _account);
     }
 
     /**
      * @dev claim all rewards from a market tranche A for a single user
      * @param _idxMarket market index
      */
-    function claimRewardSingleMarketTrA(uint256 _idxMarket) public pure {
+    function claimRewardSingleMarketTrA(uint256 _idxMarket, address _account) public pure {
         require (_idxMarket < 9999);
+        require (_account != address(0));
     }
 
     /**
      * @dev claim all rewards from a market tranche B for a single user
      * @param _idxMarket market index
      */
-    function claimRewardSingleMarketTrB(uint256 _idxMarket) public pure {
+    function claimRewardSingleMarketTrB(uint256 _idxMarket, address _account) public pure {
         require (_idxMarket < 9999);
+        require (_account != address(0));
     }
 
-    function trancheANewEnter(address account, /*uint256 amount,*/ address trancheA) external pure {
+    function trancheANewEnter(address account, address trancheA) external pure {
         require (account != address(0));
         require (trancheA != address(0));
     }
-    function trancheBNewEnter(address account, /*uint256 amount,*/ address trancheB) external pure {
+    function trancheBNewEnter(address account, address trancheB) external pure {
         require (account != address(0));
         require (trancheB != address(0));
 
