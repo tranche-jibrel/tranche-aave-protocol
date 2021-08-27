@@ -419,6 +419,19 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
     }
  
     /**
+     * @dev set staking details for previous user inside tranche A, with amount and time
+     * @param _trancheNum tranche number
+     * @param _account user's account
+     * @param _amount amount of tranche A tokens
+     * @param _time time to be considered the deposit
+     */
+    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _amount, uint256 _time) external onlyAdmins {
+        stakeCounterTrA[_account][_trancheNum] = stakeCounterTrA[_account][_trancheNum].add(1);
+        StakingDetails storage details = stakingDetailsTrancheA[_account][_trancheNum][stakeCounterTrA[_account][_trancheNum]];
+        details.startTime = _time;
+        details.amount = _amount;
+    }
+    /**
      * @dev when redemption occurs on tranche A, removing tranche A tokens from staking information (FIFO logic)
      * @param _trancheNum tranche number
      * @param _amount amount of redeemed tokens
@@ -432,9 +445,9 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
                 if (details.amount <= tmpAmount) {
                     tmpAmount = tmpAmount.sub(details.amount);
                     details.amount = 0;
-                    delete stakingDetailsTrancheA[msg.sender][_trancheNum][i];
+                    // delete stakingDetailsTrancheA[msg.sender][_trancheNum][i];
                     // update details number
-                    stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
+                    // stakeCounterTrA[msg.sender][_trancheNum] = stakeCounterTrA[msg.sender][_trancheNum].sub(1);
                 } else {
                     details.amount = details.amount.sub(tmpAmount);
                 }
@@ -451,6 +464,20 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
     }
 
     /**
+     * @dev set staking details for previous user inside tranche B, with amount and time
+     * @param _trancheNum tranche number
+     * @param _account user's account
+     * @param _amount amount of tranche B tokens
+     * @param _time time to be considered the deposit
+     */
+    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _amount, uint256 _time) external onlyAdmins {
+        stakeCounterTrB[_account][_trancheNum] = stakeCounterTrB[_account][_trancheNum].add(1);
+        StakingDetails storage details = stakingDetailsTrancheB[_account][_trancheNum][stakeCounterTrB[_account][_trancheNum]];
+        details.startTime = _time;
+        details.amount = _amount; 
+    }
+    
+    /**
      * @dev when redemption occurs on tranche B, removing tranche B tokens from staking information (FIFO logic)
      * @param _trancheNum tranche number
      * @param _amount amount of redeemed tokens
@@ -464,9 +491,9 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
                 if (details.amount <= tmpAmount) {
                     tmpAmount = tmpAmount.sub(details.amount);
                     details.amount = 0;
-                    delete stakingDetailsTrancheB[msg.sender][_trancheNum][i];
+                    // delete stakingDetailsTrancheB[msg.sender][_trancheNum][i];
                     // update details number
-                    stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
+                    // stakeCounterTrB[msg.sender][_trancheNum] = stakeCounterTrB[msg.sender][_trancheNum].sub(1);
                 } else {
                     details.amount = details.amount.sub(tmpAmount);
                 }
