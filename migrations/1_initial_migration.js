@@ -15,6 +15,8 @@ var myERC20 = artifacts.require("./mocks/myERC20.sol");
 var WETHToken = artifacts.require('WETH9_');
 var WETHGateway = artifacts.require('WETHGateway');
 
+var IncentivesController = artifacts.require('./IncentivesController');
+
 module.exports = async (deployer, network, accounts) => {
   const MYERC20_TOKEN_SUPPLY = 5000000;
   //const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -77,6 +79,11 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Eth Tranche B Token Address: " + DaiTrB.address);
 
     await JAinstance.setTrancheDeposit(1, true);
+
+    const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
+    console.log("Tranches Deployer: " + JIController.address);
+
+    await JAinstance.setincentivesControllerAddress(JIController.address);
 
   } else if (network == "kovan") {
     // AAVE_TRANCHE_ADDRESS=0x0D98E839E7db6A6507A0CAd59c4C23cBD7bAB6Af
