@@ -46,6 +46,6 @@
     "eth-gas-reporter": "^0.2.22",
     "ganache-cli": "6.12.1",
     "solidity-coverage": "^0.7.16",
-    "truffle-plugin-verify": "^0.5.8"
+    "truffle-plugin-verify": "^0.5.16"
   }
 }

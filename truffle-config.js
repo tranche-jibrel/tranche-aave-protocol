@@ -34,7 +34,7 @@ module.exports = {
       confirmations: 2,
       skipDryRun: true
     },
-    matic: {
+    polygon: {
       provider: () => new HDWalletProvider(process.env.mnemonic, `https://polygon-mainnet.infura.io/v3/${process.env.INFURA_KEY}`),
       network_id: 137,
       confirmations: 2,
@@ -46,6 +46,11 @@ module.exports = {
     'solidity-coverage',
     'truffle-plugin-verify',
   ],
+  api_keys: {
+    etherscan: `${process.env.ETHERSCAN_KEY}`,
+    polygonscan: `${process.env.POLYGONSCAN_KEY}`,
+    snowtrace: `${process.env.SNOWTRACE_KEY}`,
+  },
   mocha: {
     reporter: 'eth-gas-reporter',
     timeout: 100000

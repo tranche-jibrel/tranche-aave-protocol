@@ -34,7 +34,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
      * @param _aaveIncentiveController Aave incentive controller address (mainnet: 0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5)
      * @param _wethAddress weth / wmatic contract address
      * @param _rewardsToken rewards token address (slice token address)
-     * @param _blocksPerYear blocks / year
+     * @param _blocksPerYear blocks / year or seconds in a year
      */
     function initialize(address _adminTools, 
             address _feesCollector, 
@@ -87,7 +87,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
     }
 
     /**
-     * @dev set how many blocks will be produced per year on the blockchain 
+     * @dev set how many blocks will be produced per year on the blockchain, or seconds in a year if time is used
      * @param _newValue new value
      */
     function setBlocksPerYear(uint256 _newValue) external onlyAdmins {
@@ -261,7 +261,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
         
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
         trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixedRpb;
-        trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.number;
+        trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.timestamp;
         // if we would like to have always 18 decimals
         trancheParameters[tranchePairsCounter].storedTrancheAPrice = uint256(1e18);
 
@@ -290,10 +290,13 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorage, 
      */
     function setTrancheAExchangeRate(uint256 _trancheNum) internal returns (uint256) {
         calcRPBFromPercentage(_trancheNum);
-        uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
-        uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
+        // uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
+        uint256 deltaTime = (block.timestamp).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
+        // uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
+        uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaTime);
         trancheParameters[_trancheNum].storedTrancheAPrice = (trancheParameters[_trancheNum].storedTrancheAPrice).add(deltaPrice);
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
+        // trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
+        trancheParameters[_trancheNum].trancheALastActionBlock = block.timestamp;
         return trancheParameters[_trancheNum].storedTrancheAPrice;
     }
 
