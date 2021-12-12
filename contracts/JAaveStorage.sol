@@ -53,3 +53,20 @@ contract JAaveStorage is OwnableUpgradeable {
     mapping(uint256 => bool) public trancheDepositEnabled;
     address public rewardsToken;  // slice rewards
 }
+
+
+contract JAaveStorageV2 is JAaveStorage {
+    struct StakingDetails {
+        uint256 startTime;
+        uint256 amount;
+    }
+
+    address public incentivesControllerAddress;
+
+    // user => trancheNum => counter
+    mapping (address => mapping(uint256 => uint256)) public stakeCounterTrA;
+    mapping (address => mapping(uint256 => uint256)) public stakeCounterTrB;
+    // user => trancheNum => stakeCounter => struct
+    mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheA;
+    mapping (address => mapping (uint256 => mapping (uint256 => StakingDetails))) public stakingDetailsTrancheB;
+}

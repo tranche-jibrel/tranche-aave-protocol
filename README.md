@@ -82,12 +82,12 @@ Here (https://docs.aave.com/developers/deployed-contracts/matic-polygon-market) 
     <tbody>
         <tr>
             <td>JAave</td>
-            <td><code>19.40</code></td>
+            <td><code>22.13</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Aave to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Aave, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
         </tr>
         <tr>
-            <td>JAaveStorage</td>
-            <td><code>1.71</code></td>
+            <td>JAaveStorageV2</td>
+            <td><code>2.16</code></td>
             <td>Core contract protocol (storage)</td>
         </tr>
         <tr>

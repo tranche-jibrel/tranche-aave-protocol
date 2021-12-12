@@ -26,7 +26,7 @@ const token2 = contract.fromArtifact("myERC20");
 
 // FACTORY
 // mainnet
-const factory = '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95'
+const factory = '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95' //V1
 
 // testnet
 const kovanFactory = '0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'
