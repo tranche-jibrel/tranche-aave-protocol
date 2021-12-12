@@ -1,4 +1,5 @@
 const HDWalletProvider = require('@truffle/hdwallet-provider');
+
 require('dotenv').config();
 
 module.exports = {
@@ -41,8 +42,27 @@ module.exports = {
       timeoutBlocks: 200,
       skipDryRun: true
     },
+    avaxtest: {
+      provider: function () {
+        return new HDWalletProvider({ mnemonic : process.env.mnemonic, providerOrUrl: process.env.PROVIDER, chainId: "0xa869" })
+      },
+      gas: 6000000,
+      gasPrice: 225000000000,
+      network_id: "*",
+      confirmations: 2,
+      skipDryRun: true
+    },
+    // avaxtest: {
+    //   provider: () => new HDWalletProvider(process.env.mnemonic, process.env.PROVIDER),
+    //   network_id: 43113,
+    //   confirmations: 2,
+    //   timeoutBlocks: 200,
+    //   skipDryRun: true
+    // }
+
+
   },
-  plugins: ['truffle-contract-size', 
+  plugins: ['truffle-contract-size',
     'solidity-coverage',
     'truffle-plugin-verify',
   ],

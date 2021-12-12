@@ -207,16 +207,6 @@ module.exports = async (deployer, network, accounts) => {
       }
     }
 
-    if (!WETH_GATEWAY) {
-      await deployer.deploy(WETHGateway, WAVAX_ADDRESS, JAinstance.address);
-      JWGinstance = await WETHGateway.deployed();
-      console.log('WETH_GATEWAY', JWGinstance.address);
-    } else {
-      JWGinstance = {
-        address: WETH_GATEWAY
-      }
-    }
-
     const JTDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner });
     console.log("AAVE_DEPLOYER " + JTDeployer.address);
 
@@ -226,6 +216,16 @@ module.exports = async (deployer, network, accounts) => {
 
     await JTDeployer.setJAaveAddress(JAinstance.address, { from: factoryOwner });
     console.log('aave deployer 1');
+
+    if (!WETH_GATEWAY) {
+      await deployer.deploy(WETHGateway, WAVAX_ADDRESS, JAinstance.address);
+      JWGinstance = await WETHGateway.deployed();
+      console.log('WETH_GATEWAY', JWGinstance.address);
+    } else {
+      JWGinstance = {
+        address: WETH_GATEWAY
+      }
+    }
 
     await JAinstance.setWETHGatewayAddress(JWGinstance.address, { from: factoryOwner });
     console.log('aave deployer 2');
@@ -262,8 +262,8 @@ module.exports = async (deployer, network, accounts) => {
     let tranche2A = await JTrancheAToken.at(trParams.ATrancheAddress);
     let tranche2B = await JTrancheBToken.at(trParams.BTrancheAddress);
     trParams = await JAinstance.trancheAddresses(2);
-    let tranche2A = await JTrancheAToken.at(trParams.ATrancheAddress);
-    let tranche2B = await JTrancheBToken.at(trParams.BTrancheAddress);
+    let tranche3A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche3B = await JTrancheBToken.at(trParams.BTrancheAddress);
 
     console.log(`REACT_APP_AAVE_TRANCHE_TOKENS=${tranche1A.address},${tranche2A.address},${tranche3A.address},
     ${tranche1B.address},${tranche2B.address},${tranche3B.address}`)
