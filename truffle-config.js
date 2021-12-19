@@ -52,15 +52,16 @@ module.exports = {
       confirmations: 2,
       skipDryRun: true
     },
-    // avaxtest: {
-    //   provider: () => new HDWalletProvider(process.env.mnemonic, process.env.PROVIDER),
-    //   network_id: 43113,
-    //   confirmations: 2,
-    //   timeoutBlocks: 200,
-    //   skipDryRun: true
-    // }
-
-
+    avaxmainnet: {
+      provider: function () {
+        return new HDWalletProvider({ mnemonic : process.env.mnemonic, providerOrUrl: process.env.PROVIDER, chainId: "0xa86a" })
+      },
+      gas: 6000000,
+      gasPrice: 28000000000,
+      network_id: "*",
+      confirmations: 2,
+      skipDryRun: true
+    },
   },
   plugins: ['truffle-contract-size',
     'solidity-coverage',
