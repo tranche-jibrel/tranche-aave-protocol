@@ -358,7 +358,7 @@ module.exports = async (deployer, network, accounts) => {
     await JAinstance.setTrancheDeposit(5, true, { from: factoryOwner });
     console.log('added tranche 6');
 
-    //tranche 7 AAVE_ADDRESS, avAAVE_ADDRESS,0.5695%
+    //tranche 7 AAVE_ADDRESS, avAAVE_ADDRESS,0.0%
     await JAinstance.addTrancheToProtocol(AAVE_ADDRESS, avAAVE_ADDRESS, "Tranche A - Aave Avalanche AAVE", "aavAAVE", "Tranche B - Aave Avalanche AAVE", "bavAAVE", web3.utils.toWei("0.00", "ether"), 18, { from: factoryOwner });
     await JAinstance.setTrancheDeposit(6, true, { from: factoryOwner });
     console.log('added tranche 7');
