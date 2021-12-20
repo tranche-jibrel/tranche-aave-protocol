@@ -91,8 +91,15 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @dev set incentive rewards address
      * @param _incentivesController incentives controller contract address
      */
-    function setincentivesControllerAddress(address _incentivesController) external onlyAdmins {
+    function setIncentivesControllerAddress(address _incentivesController) external override onlyAdmins {
         incentivesControllerAddress = _incentivesController;
+    }
+
+    /**
+     * @dev get incentive rewards address
+     */
+    function getIncentivesControllerAddress() external view override returns (address) {
+        return incentivesControllerAddress;
     }
 
     /**
@@ -264,9 +271,9 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         trancheAddresses[tranchePairsCounter].buyerCoinAddress = _buyerCoinAddress;
         trancheAddresses[tranchePairsCounter].aTokenAddress = _aTokenAddress;
         trancheAddresses[tranchePairsCounter].ATrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, msg.sender, rewardsToken);
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, tranchePairsCounter);
         trancheAddresses[tranchePairsCounter].BTrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, msg.sender, rewardsToken); 
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, tranchePairsCounter); 
         
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
         trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixedRpb;
@@ -429,7 +436,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @param _amount amount of tranche A tokens
      * @param _time time to be considered the deposit
      */
-    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external onlyAdmins {
+    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external override onlyAdmins {
         stakeCounterTrA[_account][_trancheNum] = _stkNum;
         StakingDetails storage details = stakingDetailsTrancheA[_account][_trancheNum][_stkNum];
         details.startTime = _time;
@@ -479,7 +486,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @param _amount amount of tranche B tokens
      * @param _time time to be considered the deposit
      */
-    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external onlyAdmins {
+    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external override onlyAdmins {
         stakeCounterTrB[_account][_trancheNum] = _stkNum;
         StakingDetails storage details = stakingDetailsTrancheB[_account][_trancheNum][_stkNum];
         details.startTime = _time;

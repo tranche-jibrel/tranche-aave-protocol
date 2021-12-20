@@ -57,6 +57,9 @@ module.exports = async (deployer, network, accounts) => {
     const JWGinstance = await WETHGateway.deployed();
     console.log('WETHGateway Deployed: ', JWGinstance.address);
 
+    await JATinstance.addAdmin(JAinstance.address, { from: factoryOwner })
+    await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
+
     await JAinstance.setAavePoolAddressProvider(LendingPoolAddressesProvider, { from: factoryOwner })
     await JAinstance.setWETHGatewayAddress(JWGinstance.address, { from: factoryOwner });
 
