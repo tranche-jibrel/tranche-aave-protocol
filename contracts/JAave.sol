@@ -281,7 +281,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         // if we would like to have always 18 decimals
         trancheParameters[tranchePairsCounter].storedTrancheAPrice = uint256(1e18);
 
-        trancheParameters[tranchePairsCounter].redemptionPercentage = 9950;  //default value 99.5%
+        trancheParameters[tranchePairsCounter].redemptionPercentage = 10000;  //default value 100%, no fees
 
         calcRPBFromPercentage(tranchePairsCounter); // initialize tranche A RPB
 
