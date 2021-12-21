@@ -25,33 +25,11 @@ truffle compile --all
 
 ## Aave Protocol usage
 
-a) deploy JTrancheDeployer and JAave contract and initialize them (JAave parameters: address _adminTools, address _feesCollector, address _tranchesDepl,
-            address _aaveIncentiveController, address _wethAddress, address _rewardsToken, uint256 _blocksPerYear)
+Please look into ./migrations/1_initial_migration.js file for a complete understanding on how to configure Aave Tranches.
 
-b) call setAavePoolAddressProvider(address _aavePool)
-    
-    setAavePoolAddressProvider: 0x9d787053f9839966A664b0e14e9C26a3684F6E44 (on Kovan testnet)
+Users can then call buy and redeem functions for tranche A & B tokens (interest bearing tokens)
 
-c) set JAave address in jTranchesDeployer contract, 
-
-    setAavePoolAddressProvider: 0x88757f2f99175387aB4C6a4b3067c77A695b0349 (on Kovan testnet)
-
-d) call addTrancheToProtocol(address _erc20Contract, string memory _nameA, string memory _symbolA, 
-            string memory _nameB, string memory _symbolB, uint256 _fixedRpb, uint8 _underlyingDec) to set a new tranche set
-
-    add ETH tranche: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE","0x87b1f4cf9BD63f7BBD3eE1aD04E8F52540349347","Eth Tranche A","ETA","Eth Tranche B","ETB", web3.utils.toWei("0.04", "ether"),"18"  ----> Please read note below here
-
-    add DAI tranche: "0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD","0xdCf0aF9e59C002FA3AA091a46196b37530FD48a8","Dai tranche A","DTA","Dai Tranche B","DTB", web3.utils.toWei("0.03", "ether"),"18"
-
-    add USDT tranche: "0x13512979ADE267AB5100878E2e0f485B568328a4","0xFF3c8bc103682FA918c954E84F5056aB4DD5189d","USDT tranche A","USDTA","USDT Tranche B","USDTB",web3.utils.toWei("0.125", "ether"),"6"
-
-    add USDC tranche: "0xe22da380ee6B445bb8273C81944ADEB6E8450422","0xe12AFeC5aa12Cf614678f9bFeeB98cA9Bb95b5B0","USDC tranche A","USDCA","USDC Tranche B","USDCB",web3.utils.toWei("0.02", "ether"),"6"
-
-e) remember to enable every tranche deposit with setTrancheDeposit(uint256 _trancheNum, bool _enable) function
-
-Users can now call buy and redeem functions for tranche A & B tokens
-
-Note: if ETH tranche is deployed, please deploy WETHGateway contract without any proxy, then set its address in JAave with setWETHGatewayAddress function.
+Note: if ETH tranche is deployed (ethereum blockchain), or if MATIC tranche is deployed (polygon blockchain), or if AVAX tranche is deployed (Avalanche blockchain), please deploy WETHGateway contract without any proxy, then set its address in JAave with setWETHGatewayAddress function.
 
 [(Back to top)](#Aave-Tranche-Protocol)
 
@@ -69,6 +47,18 @@ Here (https://docs.aave.com/developers/deployed-contracts/matic-polygon-market) 
 
 [(Back to top)](#Aave-Tranche-Protocol)
 
+## Avalanche deployment
+
+Aave tranches are implemented on Avalanche.
+
+[(Back to top)](#Aave-Tranche-Protocol)
+
+## SIRs ready
+
+Aave tranches is ready for SIRs system.
+
+[(Back to top)](#Aave-Tranche-Protocol)
+
 ## Main contracts - Name, Size and Description
 
 <table>
@@ -82,7 +72,7 @@ Here (https://docs.aave.com/developers/deployed-contracts/matic-polygon-market) 
     <tbody>
         <tr>
             <td>JAave</td>
-            <td><code>22.13</code></td>
+            <td><code>22.17</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Aave to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Aave, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
         </tr>
         <tr>
@@ -112,32 +102,22 @@ Here (https://docs.aave.com/developers/deployed-contracts/matic-polygon-market) 
         </tr>
         <tr>
             <td>JTrancheAToken</td>
-            <td><code>10.18</code></td>
-            <td>Tranche A token (implementation), with a non decreasing price, making possible for holders to have a fixed interest percentage.</td>
-        </tr>
-        <tr>
-            <td>JTrancheATokenStorage</td>
-            <td><code>0.44</code></td>
-            <td>Tranche A token (storage)</td>
+            <td><code>7.43</code></td>
+            <td>Tranche A token (implementation and storage), with a non decreasing price, making possible for holders to have a fixed interest percentage. Not upgradeable</td>
         </tr>
         <tr>
             <td>JTrancheBToken</td>
-            <td><code>10.18</code></td>
-            <td>Tranche B token (implementation), with a floating price, making possible for holders to have a variable interest percentage.</td>
-        </tr>
-        <tr>
-            <td>JTrancheBTokenStorage</td>
-            <td><code>0.44</code></td>
-            <td>Tranche B token (storage)</td>
+            <td><code>7.43</code></td>
+            <td>Tranche B token (implementation and storage), with a floating price, making possible for holders to have a variable interest percentage. Not upgradeable</td>
         </tr>
         <tr>
             <td>JTranchesDeployer</td>
-            <td><code>23.70</code></td>
+            <td><code>20.71</code></td>
             <td>Tranche A & B token deployer (implementation): this contract deploys tranche tokens everytime a new tranche is opened by the core protocol contract</td>
         </tr>
         <tr>
             <td>JTranchesDeployerStorage</td>
-            <td><code>0.14</code></td>
+            <td><code>0.17</code></td>
             <td>Tranche A & B token deployer (storage)</td>
         </tr>
         <tr>
