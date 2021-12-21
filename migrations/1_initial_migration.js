@@ -293,9 +293,7 @@ module.exports = async (deployer, network, accounts) => {
       JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
       console.log('JAdminTools Deployed: ', JATinstance.address);
     } else {
-      JATinstance = {
-        address: ADMIN_TOOLS
-      }
+      JATinstance = await JAdminTools.at(ADMIN_TOOLS);
     }
     if (!FEE_COLLECTOR_ADDRESS) {
       JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
@@ -309,12 +307,18 @@ module.exports = async (deployer, network, accounts) => {
     const JTDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner });
     console.log("AAVE_DEPLOYER " + JTDeployer.address);
 
+    await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
+    console.log('admin added 1');
+
     const JAinstance = await deployProxy(JAave, [JATinstance.address, JFCinstance.address, JTDeployer.address,
       AAVE_INCENTIVE_ADDRESS, WAVAX_ADDRESS, REWARD_TOKEN_ADDRESS, 31557600], { from: factoryOwner });
     console.log('AAVE_TRANCHE_ADDRESS', JAinstance.address);
 
-    await JTDeployer.setJAaveAddress(JAinstance.address, { from: factoryOwner });
+    await JTDeployer.setJAaveAddresses(JAinstance.address, { from: factoryOwner });
     console.log('aave deployer 1');
+
+    await JATinstance.addAdmin(JAinstance.address, { from: factoryOwner })
+    console.log('admin added 2');
 
     if (!WETH_GATEWAY) {
       await deployer.deploy(WETHGateway, WAVAX_ADDRESS, JAinstance.address);
@@ -371,10 +375,10 @@ module.exports = async (deployer, network, accounts) => {
     if (!MOCK_INCENTIVE_CONTROLLER) {
       const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
       console.log("MOCK_INCENTIVE_CONTROLLER " + JIController.address);
-      await JAinstance.setincentivesControllerAddress(JIController.address);
+      await JAinstance.setIncentivesControllerAddress(JIController.address);
       console.log('incentive controller setup')
     } else {
-      await JAinstance.setincentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
+      await JAinstance.setIncentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
       console.log('incentive controller setup')
     }
 
