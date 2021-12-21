@@ -47,7 +47,6 @@ contract IncentivesController is OwnableUpgradeable {
     function trancheBNewEnter(address account, address trancheB) external pure {
         require (account != address(0));
         require (trancheB != address(0));
-
     }
 
 }
