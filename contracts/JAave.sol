@@ -600,7 +600,8 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         uint256 userAmount = normAmount.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, userAmount, msg.sender);
         uint256 feesAmount = normAmount.sub(userAmount);
-        aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
+        if (feesAmount > 0)
+            aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
         
         // claim and transfer rewards to msg.sender. Be sure to wait for this function to be completed! 
         bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
@@ -687,7 +688,8 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         uint256 userAmount = normAmount.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, userAmount, msg.sender);
         uint256 feesAmount = normAmount.sub(userAmount);
-        aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
+        if (feesAmount > 0)
+            aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
 
         // claim and transfer rewards to msg.sender. Be sure to wait for this function to be completed! 
         bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
