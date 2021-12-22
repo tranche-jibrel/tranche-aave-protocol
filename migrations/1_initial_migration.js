@@ -215,18 +215,18 @@ module.exports = async (deployer, network, accounts) => {
       AAVE_INCENTIVE_ADDRESS, WAVAX_ADDRESS, REWARD_TOKEN_ADDRESS, 31557600], { from: factoryOwner });
     console.log('AAVE_TRANCHE_ADDRESS', JAinstance.address);
 
-    await JTDeployer.setJAaveAddresses(JAinstance.address,JATinstance.address, { from: factoryOwner });
+    await JTDeployer.setJAaveAddresses(JAinstance.address, JATinstance.address, { from: factoryOwner });
     console.log('aave deployer 1');
     await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
 
     if (!WETH_GATEWAY) {
       await deployer.deploy(WETHGateway, WAVAX_ADDRESS, JAinstance.address);
       JWGinstance = await WETHGateway.deployed();
+      await JWGinstance.setJAaveAddress(JAinstance.address);
       console.log('WETH_GATEWAY', JWGinstance.address);
     } else {
-      JWGinstance = {
-        address: WETH_GATEWAY
-      }
+      JWGinstance = await WETHGateway.at(WETH_GATEWAY)
+      await JWGinstance.setJAaveAddress(JAinstance.address);
     }
 
     await JAinstance.setWETHGatewayAddress(JWGinstance.address, { from: factoryOwner });
@@ -236,7 +236,7 @@ module.exports = async (deployer, network, accounts) => {
     console.log('aave deployer 3');
 
     await JATinstance.addAdmin(JAinstance.address, { from: factoryOwner })
-   
+
 
     await JAinstance.addTrancheToProtocol(AVAX_ADDRESS, aavaWAVAX_ADDRESS, "Tranche A - Aave Avalanche AVAX", "aavWAVAX", "Tranche B - Aave Avalanche AVAX", "bavWAVAX", web3.utils.toWei("0.03", "ether"), 18, { from: factoryOwner });
     await JAinstance.setTrancheDeposit(0, true, { from: factoryOwner });
@@ -275,7 +275,6 @@ module.exports = async (deployer, network, accounts) => {
   }
   else if (network === 'avaxmainnet') {
     let { AAVE_POOL, ADMIN_TOOLS, FEE_COLLECTOR_ADDRESS, WETH_GATEWAY, REWARD_TOKEN_ADDRESS, AAVE_INCENTIVE_ADDRESS, MOCK_INCENTIVE_CONTROLLER, WAVAX_ADDRESS,
-
       AVAX_ADDRESS, avWAVAX_ADDRESS,
       WETH_ADDRESS, avWETH_ADDRESS,
       WBTC_ADDRESS, avWBTC_ADDRESS,
@@ -314,7 +313,7 @@ module.exports = async (deployer, network, accounts) => {
       AAVE_INCENTIVE_ADDRESS, WAVAX_ADDRESS, REWARD_TOKEN_ADDRESS, 31557600], { from: factoryOwner });
     console.log('AAVE_TRANCHE_ADDRESS', JAinstance.address);
 
-    await JTDeployer.setJAaveAddresses(JAinstance.address, { from: factoryOwner });
+    await JTDeployer.setJAaveAddresses(JAinstance.address, JATinstance.address, { from: factoryOwner });
     console.log('aave deployer 1');
 
     await JATinstance.addAdmin(JAinstance.address, { from: factoryOwner })
@@ -324,12 +323,11 @@ module.exports = async (deployer, network, accounts) => {
       await deployer.deploy(WETHGateway, WAVAX_ADDRESS, JAinstance.address);
       JWGinstance = await WETHGateway.deployed();
       console.log('WETH_GATEWAY', JWGinstance.address);
+      await JWGinstance.setJAaveAddress(JAinstance.address);
     } else {
-      JWGinstance = {
-        address: WETH_GATEWAY
-      }
+      JWGinstance = await WETHGateway.at(WETH_GATEWAY)
+      await JWGinstance.setJAaveAddress(JAinstance.address);
     }
-
     await JAinstance.setWETHGatewayAddress(JWGinstance.address, { from: factoryOwner });
     console.log('aave deployer 2');
 
