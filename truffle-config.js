@@ -44,7 +44,7 @@ module.exports = {
     },
     avaxtest: {
       provider: function () {
-        return new HDWalletProvider({ mnemonic : process.env.mnemonic, providerOrUrl: process.env.PROVIDER, chainId: "0xa869" })
+        return new HDWalletProvider({ mnemonic: process.env.mnemonic, providerOrUrl: process.env.PROVIDER, chainId: "0xa869" })
       },
       gas: 6000000,
       gasPrice: 225000000000,
@@ -54,10 +54,10 @@ module.exports = {
     },
     avaxmainnet: {
       provider: function () {
-        return new HDWalletProvider({ mnemonic : process.env.mnemonic, providerOrUrl: process.env.PROVIDER, chainId: "0xa86a" })
+        return new HDWalletProvider({ privateKeys: [process.env.mnemonic], providerOrUrl: process.env.PROVIDER, chainId: "0xa86a" })
       },
       gas: 6000000,
-      gasPrice: 28000000000,
+      gasPrice: 50000000000,
       network_id: "*",
       confirmations: 2,
       skipDryRun: true
@@ -74,6 +74,10 @@ module.exports = {
   },
   mocha: {
     reporter: 'eth-gas-reporter',
+    reporterOptions: {
+      currency: "USD",
+      coinmarketcap: `${process.env.CMC_API_KEY}`
+    },
     timeout: 100000
   },
   // Configure your compilers

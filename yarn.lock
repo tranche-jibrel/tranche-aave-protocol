@@ -1398,40 +1398,6 @@
   "resolved" "https://registry.npmjs.org/@repeaterjs/repeater/-/repeater-3.0.4.tgz"
   "version" "3.0.4"
 
-"@resolver-engine/core@^0.2.1":
-  "integrity" "sha512-nsLQHmPJ77QuifqsIvqjaF5B9aHnDzJjp73Q1z6apY3e9nqYrx4Dtowhpsf7Jwftg/XzVDEMQC+OzUBNTS+S1A=="
-  "resolved" "https://registry.npmjs.org/@resolver-engine/core/-/core-0.2.1.tgz"
-  "version" "0.2.1"
-  dependencies:
-    "debug" "^3.1.0"
-    "request" "^2.85.0"
-
-"@resolver-engine/fs@^0.2.1":
-  "integrity" "sha512-7kJInM1Qo2LJcKyDhuYzh9ZWd+mal/fynfL9BNjWOiTcOpX+jNfqb/UmGUqros5pceBITlWGqS4lU709yHFUbg=="
-  "resolved" "https://registry.npmjs.org/@resolver-engine/fs/-/fs-0.2.1.tgz"
-  "version" "0.2.1"
-  dependencies:
-    "@resolver-engine/core" "^0.2.1"
-    "debug" "^3.1.0"
-
-"@resolver-engine/imports-fs@^0.2.2":
-  "integrity" "sha512-gFCgMvCwyppjwq0UzIjde/WI+yDs3oatJhozG9xdjJdewwtd7LiF0T5i9lrHAUtqrQbqoFE4E+ZMRVHWpWHpKQ=="
-  "resolved" "https://registry.npmjs.org/@resolver-engine/imports-fs/-/imports-fs-0.2.2.tgz"
-  "version" "0.2.2"
-  dependencies:
-    "@resolver-engine/fs" "^0.2.1"
-    "@resolver-engine/imports" "^0.2.2"
-    "debug" "^3.1.0"
-
-"@resolver-engine/imports@^0.2.2":
-  "integrity" "sha512-u5/HUkvo8q34AA+hnxxqqXGfby5swnH0Myw91o3Sm2TETJlNKXibFGSKBavAH+wvWdBi4Z5gS2Odu0PowgVOUg=="
-  "resolved" "https://registry.npmjs.org/@resolver-engine/imports/-/imports-0.2.2.tgz"
-  "version" "0.2.2"
-  dependencies:
-    "@resolver-engine/core" "^0.2.1"
-    "debug" "^3.1.0"
-    "hosted-git-info" "^2.6.0"
-
 "@sindresorhus/is@^0.14.0":
   "integrity" "sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ=="
   "resolved" "https://registry.npmjs.org/@sindresorhus/is/-/is-0.14.0.tgz"
@@ -1441,11 +1407,6 @@
   "integrity" "sha512-d7VS7PxgMosm5NyaiyDJRNID5pK4AWj1l64Dbz0147hJgy5k2C0/ZiKK/9u5c5K+HRUVHmp+RMvGEjGh84oA5Q=="
   "resolved" "https://registry.npmjs.org/@solidity-parser/parser/-/parser-0.12.2.tgz"
   "version" "0.12.2"
-
-"@solidity-parser/parser@^0.8.0":
-  "integrity" "sha512-8LySx3qrNXPgB5JiULfG10O3V7QTxI/TLzSw5hFQhXWSkVxZBAv4rZQ0sYgLEbc8g3L2lmnujj1hKul38Eu5NQ=="
-  "resolved" "https://registry.npmjs.org/@solidity-parser/parser/-/parser-0.8.2.tgz"
-  "version" "0.8.2"
 
 "@szmarczak/http-timer@^1.1.2":
   "integrity" "sha512-XIB2XbzHTN6ieIjfIMV9hlVcfPU26s2vafYWQcZHWXHOxiaRZYEDKEwdl129Zyg50+foYV2jCgtrqSA6qNuNSA=="
@@ -7290,6 +7251,11 @@
     "ethereumjs-wallet" "0.6.5"
     "web3" "1.2.11"
 
+"ganache-time-traveler@^1.0.16":
+  "integrity" "sha512-oUaQge9tiT/zzcGqehqJcoH10claKi9QFhq7zI1Wa3KtdPobjgLVMYvqXCJuHCAZoS7sHvLB/N/rSnhmivxaKw=="
+  "resolved" "https://registry.npmjs.org/ganache-time-traveler/-/ganache-time-traveler-1.0.16.tgz"
+  "version" "1.0.16"
+
 "gauge@~2.7.3":
   "integrity" "sha1-LANAXHU4w51+s3sxcCLjJfsBi/c="
   "resolved" "https://registry.npmjs.org/gauge/-/gauge-2.7.4.tgz"
@@ -7915,7 +7881,7 @@
     "os-homedir" "^1.0.0"
     "os-tmpdir" "^1.0.1"
 
-"hosted-git-info@^2.1.4", "hosted-git-info@^2.6.0":
+"hosted-git-info@^2.1.4":
   "integrity" "sha512-f/wzC2QaWBs7t9IYqB4T3sR1xviIViXJRJTWBlx2Gf3g0Xi5vI7Yy4koXQ1c9OYDGHN9sBy1DQ2AB8fqZBWhUg=="
   "resolved" "https://registry.npmjs.org/hosted-git-info/-/hosted-git-info-2.8.8.tgz"
   "version" "2.8.8"
@@ -10128,11 +10094,6 @@
   "version" "0.5.5"
   dependencies:
     "minimist" "^1.2.5"
-
-"mkdirp@^1.0.4":
-  "integrity" "sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw=="
-  "resolved" "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
-  "version" "1.0.4"
 
 "mkdirp@0.5.1":
   "integrity" "sha1-MAV0OOrGz3+MR2fzhkjWaX11yQM="
@@ -13970,17 +13931,6 @@
     "cli-table" "^0.3.1"
     "yargs" "^15.3.1"
 
-"truffle-flattener@latest":
-  "integrity" "sha512-vmzWG/L5OXoNruMV6u2l2IaheI091e+t+fFCOR9sl46EE3epkSRIwGCmIP/EYDtPsFBIG7e6exttC9/GlfmxEQ=="
-  "resolved" "https://registry.npmjs.org/truffle-flattener/-/truffle-flattener-1.5.0.tgz"
-  "version" "1.5.0"
-  dependencies:
-    "@resolver-engine/imports-fs" "^0.2.2"
-    "@solidity-parser/parser" "^0.8.0"
-    "find-up" "^2.1.0"
-    "mkdirp" "^1.0.4"
-    "tsort" "0.0.1"
-
 "truffle-plugin-verify@^0.5.16":
   "integrity" "sha512-e50z24Sn3w3v76PnaRfufj2phpltxP9gi0T8LEaj1knMeTxVmX+Nqvg4Rp9xr4u+cixCBmEXIOk9Vb6hol4uFw=="
   "resolved" "https://registry.npmjs.org/truffle-plugin-verify/-/truffle-plugin-verify-0.5.16.tgz"
@@ -14066,11 +14016,6 @@
   "integrity" "sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w=="
   "resolved" "https://registry.npmjs.org/tslib/-/tslib-2.2.0.tgz"
   "version" "2.2.0"
-
-"tsort@0.0.1":
-  "integrity" "sha1-4igPXoF/i/QnVlf9D5rr1E9aJ4Y="
-  "resolved" "https://registry.npmjs.org/tsort/-/tsort-0.0.1.tgz"
-  "version" "0.0.1"
 
 "tunnel-agent@^0.6.0":
   "integrity" "sha1-J6XeoGs2sEoKmWZ3SykIaPD8QP0="
