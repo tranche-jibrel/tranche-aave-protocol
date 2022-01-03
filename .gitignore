@@ -13,4 +13,5 @@ package-lock.json
 .openzeppelin/unknown*.json
 *.txt
 old/
-
+coverage/
+coverage.json

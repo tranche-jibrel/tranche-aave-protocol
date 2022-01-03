@@ -13931,10 +13931,10 @@
     "cli-table" "^0.3.1"
     "yargs" "^15.3.1"
 
-"truffle-plugin-verify@^0.5.16":
-  "integrity" "sha512-e50z24Sn3w3v76PnaRfufj2phpltxP9gi0T8LEaj1knMeTxVmX+Nqvg4Rp9xr4u+cixCBmEXIOk9Vb6hol4uFw=="
-  "resolved" "https://registry.npmjs.org/truffle-plugin-verify/-/truffle-plugin-verify-0.5.16.tgz"
-  "version" "0.5.16"
+"truffle-plugin-verify@^0.5.20":
+  "integrity" "sha512-s6zG7QbVK5tWPAhRz1oKi/M8SXdRgcWR4PRuHM/BB0qZBcE/82WmnqyC2D/qfqEY+BCgUUWXfc/hyzsgH4dyNw=="
+  "resolved" "https://registry.npmjs.org/truffle-plugin-verify/-/truffle-plugin-verify-0.5.20.tgz"
+  "version" "0.5.20"
   dependencies:
     "axios" "^0.21.1"
     "cli-logger" "^0.5.40"

@@ -28,24 +28,15 @@ var JTrancheBToken = artifacts.require('JTrancheBToken');
 
 var IncentivesController = artifacts.require('./IncentivesController');
 
-// const MYERC20_TOKEN_SUPPLY = 5000000;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 // const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 const AVAX_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-const WETH_E_ADDRESS = "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab"; // AVAX mainnet
-// const DAI_ADDRESS = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD';
-const DAI_E_ADDRESS = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD';
-const WBTC_E_ADDRESS = '0x50b7545627a5162f82a992c33b87adc75187b218';
-const WAVAX_ADDRESS = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
 
 // const LendingPoolAddressesProvider = '0x88757f2f99175387aB4C6a4b3067c77A695b0349';
 const LendingPoolAddressesProvider = '0xb6A86025F0FE1862B372cb0ca18CE3EDe02A318f'; // AVAX mainnet
-const aWETH_Address = '0x87b1f4cf9BD63f7BBD3eE1aD04E8F52540349347';
+
 const avWAVAX_Address = '0xDFE521292EcE2A4f44242efBcD66Bc594CA9714B';
-const avWETH_Address = '0x53f7c5869a859F0AeC3D334ee8B4Cf01E3492f21';
-const aDAI_Address = '0xdCf0aF9e59C002FA3AA091a46196b37530FD48a8';
-const avDAI_Address = '0x47AFa96Cdc9fAb46904A55a6ad4bf6660B53c38a';
-const avWBCT_Address = '0x686bEF2417b6Dc32C50a3cBfbCC3bb60E1e9a15D';
+
 // const aaveIncentiveController = '0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5';
 const aaveIncentiveController = '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9';  // AVAX Mainnet
 

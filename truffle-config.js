@@ -54,11 +54,11 @@ module.exports = {
     },
     avaxmainnet: {
       provider: function () {
-        return new HDWalletProvider({ privateKeys: [process.env.mnemonic], providerOrUrl: process.env.PROVIDER, chainId: "0xa86a" })
+        return new HDWalletProvider({ mnemonic: process.env.mnemonic, providerOrUrl: process.env.PROVIDER, chainId: "0xa86a" })
       },
       gas: 6000000,
       gasPrice: 50000000000,
-      network_id: "*",
+      network_id: 43114,
       confirmations: 2,
       skipDryRun: true
     },

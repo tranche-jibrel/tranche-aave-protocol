@@ -33,8 +33,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @param _feesCollector fees collector contract address
      * @param _tranchesDepl tranches deployer contract address
      * @param _aaveIncentiveController Aave incentive controller address (mainnet: 0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5)
-     * @param _wethAddress weth / wmatic contract address
-     * @param _rewardsToken rewards token address (slice token address)
+     * @param _wethAddress weth / wmatic / wavax contract address
      * @param _blocksPerYear blocks / year or seconds in a year
      */
     function initialize(address _adminTools, 
@@ -42,7 +41,6 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
             address _tranchesDepl,
             address _aaveIncentiveController,
             address _wethAddress,
-            address _rewardsToken,
             uint256 _blocksPerYear) external initializer() {
         OwnableUpgradeable.__Ownable_init();
         adminToolsAddress = _adminTools;
@@ -52,7 +50,6 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         redeemTimeout = 3; //default
         wrappedEthAddress = _wethAddress;
         totalBlocksPerYear = _blocksPerYear;
-        rewardsToken = _rewardsToken;
     }
 
     /**
@@ -71,20 +68,20 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @param _adminTools price oracle address
      * @param _feesCollector fees collector contract address
      * @param _tranchesDepl tranches deployer contract address
+     * @param _aaveIncentiveController Aave incentive controller address
+     * @param _wethAddress weth / wmatic / wavax contract address
      */
     function setNewEnvironment(address _adminTools, 
             address _feesCollector, 
             address _tranchesDepl,
             address _aaveIncentiveController,
-            address _wethAddress,
-            address _rewardsToken) external onlyOwner{
+            address _wethAddress) external onlyOwner{
         require((_adminTools != address(0)) && (_feesCollector != address(0)) && (_tranchesDepl != address(0)), "JAave: check addresses");
         adminToolsAddress = _adminTools;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
         aaveIncentiveControllerAddress = _aaveIncentiveController;
         wrappedEthAddress = _wethAddress;
-        rewardsToken = _rewardsToken;
     }
 
     /**

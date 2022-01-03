@@ -19,7 +19,6 @@ const timeMachine = require('ganache-time-traveler');
 const fs = require('fs');
 const DAI_ABI = JSON.parse(fs.readFileSync('./test/utils/Dai.abi', 'utf8'));
 
-const mySlice = artifacts.require("myERC20");
 const JAdminTools = artifacts.require('JAdminTools');
 const JFeesCollector = artifacts.require('JFeesCollector');
 
@@ -74,11 +73,6 @@ contract("DAI.e JAave", function (accounts) {
   });
 
   it("All other contracts ok", async function () {
-    rewardTokenContract = await mySlice.deployed();
-    expect(rewardTokenContract.address).to.be.not.equal(ZERO_ADDRESS);
-    expect(rewardTokenContract.address).to.match(/0x[0-9a-fA-F]{40}/);
-    console.log(rewardTokenContract.address);
-
     jFCContract = await JFeesCollector.deployed();
     expect(jFCContract.address).to.be.not.equal(ZERO_ADDRESS);
     expect(jFCContract.address).to.match(/0x[0-9a-fA-F]{40}/);

@@ -19,8 +19,9 @@ module.exports = {
     fork: 'https://api.avax.network/ext/bc/C/rpc',
     network_id: 43114,
     unlocked_accounts: [
-      '0x20243F4081b0F777166F656871b61c2792FB4124', // DAi tests
-      //'0xAe2D4617c862309A3d75A0fFB358c7a5009c673F', // USDC tests
+      '0x20243F4081b0F777166F656871b61c2792FB4124', // DAI.e tests
+      '0x652aD82d4CcbA3b162094b7bee69436d36754317', // WBTC.e tests
+      '0x3A2434c698f8D79af1f5A9e43013157ca8B11a66', // USDC.e tests
     ],
   }
 };
