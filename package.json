@@ -22,8 +22,8 @@
   "homepage": "https://github.com/tranche-jibrel/tranche-aave-protocol#readme",
   "dependencies": {
     "@aave/protocol-v2": "1.0.1",
-    "@openzeppelin/contracts": "3.4.0",
-    "@openzeppelin/contracts-upgradeable": "3.4.0",
+    "@openzeppelin/contracts": "4.4.1",
+    "@openzeppelin/contracts-upgradeable": "4.4.1",
     "@truffle/hdwallet-provider": "1.4.0",
     "@uniswap/lib": "^4.0.1-alpha",
     "@uniswap/v2-core": "^1.0.1",
@@ -36,10 +36,8 @@
     "web3": "latest"
   },
   "devDependencies": {
-    "@openzeppelin/test-environment": "^0.1.9",
-    "@openzeppelin/test-helpers": "^0.5.10",
-    "@openzeppelin/truffle-upgrades": "1.5.0",
-    "@openzeppelin/upgrades-core": "1.5.0",
+    "@openzeppelin/test-helpers": "0.5.15",
+    "@openzeppelin/truffle-upgrades": "1.11.0",
     "chai": "^4.2.0",
     "chai-bn": "^0.2.1",
     "eth-gas-reporter": "^0.2.22",

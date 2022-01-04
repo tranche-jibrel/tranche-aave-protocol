@@ -74,47 +74,47 @@ Aave tranches is ready for SIRs system.
     <tbody>
         <tr>
             <td>JAave</td>
-            <td><code>22.09</code></td>
+            <td><code>21.31</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Aave to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Aave, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
         </tr>
         <tr>
             <td>JAaveStorageV2</td>
-            <td><code>2.16</code></td>
+            <td><code>1.91</code></td>
             <td>Core contract protocol (storage)</td>
         </tr>
         <tr>
             <td>JAdminTools</td>
-            <td><code>2.73</code></td>
+            <td><code>2.16</code></td>
             <td>Contract for administrative roles control (implementation), allowing the identification of addresses when dealing with reserved methods.</td>
         </tr>
         <tr>
             <td>JAdminToolsStorage</td>
-            <td><code>0.87</code></td>
+            <td><code>0.72</code></td>
             <td>Contract for administrative roles control (storage)</td>
         </tr>
         <tr>
             <td>JFeesCollector</td>
-            <td><code>10.40</code></td>
+            <td><code>9.00</code></td>
             <td>Fees collector and uniswap swapper (implementation), it changes all fees and extra tokens into new interests for token holders, sending back extra amount to Aave protocol contract</td>
         </tr>
         <tr>
             <td>JFeesCollectorStorage</td>
-            <td><code>0.96</code></td>
+            <td><code>0.82</code></td>
             <td>Fees collector and uniswap swapper (storage)</td>
         </tr>
         <tr>
             <td>JTrancheAToken</td>
-            <td><code>7.43</code></td>
+            <td><code>6.83</code></td>
             <td>Tranche A token (implementation and storage), with a non decreasing price, making possible for holders to have a fixed interest percentage. Not upgradeable</td>
         </tr>
         <tr>
             <td>JTrancheBToken</td>
-            <td><code>7.43</code></td>
+            <td><code>6.83</code></td>
             <td>Tranche B token (implementation and storage), with a floating price, making possible for holders to have a variable interest percentage. Not upgradeable</td>
         </tr>
         <tr>
             <td>JTranchesDeployer</td>
-            <td><code>20.71</code></td>
+            <td><code>18.36</code></td>
             <td>Tranche A & B token deployer (implementation): this contract deploys tranche tokens everytime a new tranche is opened by the core protocol contract</td>
         </tr>
         <tr>
@@ -124,7 +124,7 @@ Aave tranches is ready for SIRs system.
         </tr>
         <tr>
             <td>WETHGateway</td>
-            <td><code>2.72</code></td>
+            <td><code>2.43</code></td>
             <td>Wrapped Ethereum gateway, useful when dealing with wrapped ethers and ethers</td>
         </tr>
     </tbody>

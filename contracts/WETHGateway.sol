@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.6.12;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.8.8;
+// pragma experimental ABIEncoderV2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -18,10 +18,10 @@ contract WETHGateway is IWETHGateway, Ownable {
    * @param _weth Address of the Wrapped Ether contract
    * @param _jAaveAddress Address of the JAvve contract
    **/
-  constructor(address _weth, address _jAaveAddress) public {
+  constructor(address _weth, address _jAaveAddress) {
     jAaveAddress = _jAaveAddress;
     WETH = IWETH(_weth);
-    IWETH(_weth).approve(_jAaveAddress, uint256(-1));
+    IWETH(_weth).approve(_jAaveAddress, type(uint256).max);
   }
 
   /**

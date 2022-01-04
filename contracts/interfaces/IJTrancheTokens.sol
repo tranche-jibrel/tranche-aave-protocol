@@ -4,7 +4,7 @@
  * @summary: JTranches Interface
  * @author: Jibrel Team
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.8;
 
 interface IJTrancheTokens {
     function mint(address account, uint256 value) external;

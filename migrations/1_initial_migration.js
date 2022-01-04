@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
 
+var myERC20 = artifacts.require("myERC20")
 var JFeesCollector = artifacts.require("JFeesCollector");
 var JAdminTools = artifacts.require("JAdminTools");
 
@@ -13,7 +14,11 @@ var JTrancheBToken = artifacts.require('JTrancheBToken');
 // var WETHToken = artifacts.require('WETH9_');
 var WETHGateway = artifacts.require('WETHGateway');
 
+var PriceHelper = artifacts.require('./PriceHelper');
+var MarketHelper = artifacts.require('./MarketHelper');
 var IncentivesController = artifacts.require('./IncentivesController');
+
+var Chainlink1 = artifacts.require('Chainlink1');
 
 //const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 // const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -37,11 +42,15 @@ const avUSDC_Address = '0x46A51127C3ce23fb7AB1DE06226147F446e4a857';
 // const aaveIncentiveController = '0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5';
 const aaveIncentiveController = '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9';  // AVAX Mainnet
 
+const MYERC20_TOKEN_SUPPLY = 20000000;
 
 module.exports = async (deployer, network, accounts) => {
 
   if (network == "development") {
     const factoryOwner = accounts[0];
+
+    const mySLICEinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: factoryOwner });
+    console.log('mySLICE Deployed: ', mySLICEinstance.address);
 
     const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
     console.log('JAdminTools Deployed: ', JATinstance.address);
@@ -104,10 +113,21 @@ module.exports = async (deployer, network, accounts) => {
 
     await JAinstance.setTrancheDeposit(3, true);
 
-    const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
+    const myChainlink1Inst = await deployProxy(Chainlink1, [], {from: factoryOwner});
+    console.log('myChainlink1 Deployed: ', myChainlink1Inst.address);
+
+    const myPriceHelperInst = await deployProxy(PriceHelper, [], {from: factoryOwner});
+    console.log('myPriceHelper Deployed: ', myPriceHelperInst.address);
+
+    const myMktHelperinstance = await deployProxy(MarketHelper, [], {from: factoryOwner});
+    console.log('myMktHelperinstance Deployed: ', myMktHelperinstance.address);
+
+    const JIController = await deployProxy(IncentivesController, [mySLICEinstance.address, myMktHelperinstance.address, myPriceHelperInst.address], { from: factoryOwner });
     console.log("SIRs address: " + JIController.address);
 
-    await JAinstance.setIncentivesControllerAddress(JIController.address);
+    await myPriceHelperInst.setControllerAddress(JIController.address, { from: factoryOwner })
+
+    await JAinstance.setIncentivesControllerAddress(JIController.address, { from: factoryOwner });
 
   } else if (network == "kovan") {
     const factoryOwner = accounts[0];

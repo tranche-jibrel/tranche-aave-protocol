@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.6.12;
+pragma solidity 0.8.8;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./interfaces/IJTrancheTokens.sol";
 import "./interfaces/IJAave.sol";
 import "./interfaces/IIncentivesController.sol";
@@ -17,7 +17,7 @@ contract JTrancheAToken is Ownable, ERC20, AccessControl, IJTrancheTokens {
 	address public jAaveAddress;
 	uint256 public protTrancheNum;
 
-	constructor(string memory name, string memory symbol, uint256 _trNum) public ERC20(name, symbol) {
+	constructor(string memory name, string memory symbol, uint256 _trNum) ERC20(name, symbol) {
 		protTrancheNum = _trNum;
 		// Grant the minter role to a specified account
         _setupRole(MINTER_ROLE, msg.sender);
