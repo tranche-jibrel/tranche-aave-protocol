@@ -51,7 +51,62 @@ Here (https://docs.aave.com/developers/deployed-contracts/matic-polygon-market) 
 
 Aave tranches are implemented on Avalanche.
 
-Tests on Avalanche - JAave 94.19% 
+<table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Test %</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>AVAXGateway</td>
+            <td><code>77.27%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JAave</td>
+            <td><code>95.35%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JFeesCollector</td>
+            <td><code>6.25%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JAdminTools</td>
+            <td><code>57.89%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JTrancheDeployer</td>
+            <td><code>80%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>JTrancheTokens</td>
+            <td><code>100%</code></td>
+            <td>---</td>
+        </tr>
+        <tr>
+            <td>IncentivesController</td>
+            <td><code>68.91%</code></td>
+            <td>99% in https://github.com/tranche-jibrel/tranche-rewards</td>
+        </tr>
+        <tr>
+            <td>MarketHelper</td>
+            <td><code>90.24%</code></td>
+            <td>98% in https://github.com/tranche-jibrel/tranche-rewards</td>
+        </tr>
+        <tr>
+            <td>PriceHelper</td>
+            <td><code>30.43%</code></td>
+            <td>96% in https://github.com/tranche-jibrel/tranche-rewards</td>
+        </tr>
+    </tbody>
+  </table>
 
 [(Back to top)](#Aave-Tranche-Protocol)
 
@@ -72,6 +127,15 @@ Aave tranches is ready for SIRs system.
       </tr>
     </thead>
     <tbody>
+    <tr>
+        <td>IncentivesController</td>
+            <td><code>21.55</code></td>
+            <td>Incentives controller contract (implementation). It distributes rewards to single tranches based on TVLs and returns from every tranche. Rewards are normally distributed in platform token (liquidity farming)</td>
+        </tr>
+        <td>IncentivesControllerStorage</td>
+            <td><code>1.67</code></td>
+            <td>Incentives controller contract (storage)</td>
+        </tr>
         <tr>
             <td>JAave</td>
             <td><code>21.31</code></td>
