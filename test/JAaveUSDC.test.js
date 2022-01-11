@@ -206,7 +206,7 @@ contract("USDC.e JAave", function (accounts) {
     console.log("User1 New USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC.e");
     console.log("User1 trB tokens: " + fromWei(await usdcTrBContract.balanceOf(user1)) + " JWBB");
     // console.log("CErc20 USDC.e balance: " + fromWei8Dec(await usdcContract.methods.balanceOf(QIDAI).call()) + " USDC.e");
-    console.log("JAave USDC.e balance: " + fromWei6Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " avUSDC");
+    console.log("JAave USDC.e balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " avUSDC");
     console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3, 0)));
     trAddresses = await jAaveContract.trancheAddresses(3); //.cTokenAddress;
     trPars = await jAaveContract.trancheParameters(3);
