@@ -42,9 +42,9 @@ const IncentivesController = artifacts.require("IncentivesController.sol");
 
 const MYERC20_TOKEN_SUPPLY = 20000000;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const USDCE_HOLDER = "0x3A2434c698f8D79af1f5A9e43013157ca8B11a66";
-const USDCE_ADDRESS = "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
-const avUSDC_Address = '0x46A51127C3ce23fb7AB1DE06226147F446e4a857';
+const USDC_HOLDER = "0xe2644b0dc1b96C101d95421E95789eF6992B0E6A";
+const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+const aUSDC_Address = '0xBcca60bB61934080951369a648Fb03DF4F96263C';
 
 const MKT1_DECS = 6;
 const MKT2_DECS = 18;
@@ -64,7 +64,7 @@ const toWei8Dec = (x) => x * Math.pow(10, 8);
 const fromWei6Dec = (x) => x / Math.pow(10, 6);
 const toWei6Dec = (x) => x * Math.pow(10, 6);
 
-contract("JAave USDC.e & rewards", function (accounts) {
+contract("JAave USDC & rewards", function (accounts) {
 
   it("ETH balances", async function () {
     //accounts = await web3.eth.getAccounts();
@@ -139,20 +139,20 @@ contract("JAave USDC.e & rewards", function (accounts) {
     expect(chainlink1Contract.address).to.match(/0x[0-9a-fA-F]{40}/);
   });
 
-  it("Sending USDC.e to user1", async function () {
-    usdcContract = new web3.eth.Contract(USDC_ABI, USDCE_ADDRESS);
+  it("Sending USDC to user1", async function () {
+    usdcContract = new web3.eth.Contract(USDC_ABI, USDC_ADDRESS);
     result = await usdcContract.methods.totalSupply().call();
     console.log(result.toString())
-    console.log("UnBlockedAccount USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(USDCE_HOLDER).call()) + " USDC.e");
+    console.log("UnBlockedAccount USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(USDC_HOLDER).call()) + " USDC");
 
     // send a couple of AVAX to unblocked account so to pay fees
-    await web3.eth.sendTransaction({to: USDCE_HOLDER, from: user1, value: web3.utils.toWei('2')})
-    console.log(await web3.eth.getBalance(USDCE_HOLDER));
+    await web3.eth.sendTransaction({to: USDC_HOLDER, from: user1, value: web3.utils.toWei('2')})
+    console.log(await web3.eth.getBalance(USDC_HOLDER));
     console.log(await web3.eth.getBalance(user1));
 
-    await usdcContract.methods.transfer(user1, toWei6Dec(10000)).send({from: USDCE_HOLDER})
-    console.log("UnBlockedAccount USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(USDCE_HOLDER).call()) + " USDC.e");
-    console.log("user1 USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC.e");
+    await usdcContract.methods.transfer(user1, toWei6Dec(10000)).send({from: USDC_HOLDER})
+    console.log("UnBlockedAccount USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(USDC_HOLDER).call()) + " USDC");
+    console.log("user1 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC");
   });
 
   it("user1 buys some token daiTrA", async function () {
@@ -164,17 +164,17 @@ contract("JAave USDC.e & rewards", function (accounts) {
 
     trPar = await jAaveContract.trancheParameters(3);
     trParams = await jAaveContract.trancheAddresses(3);
-    expect(trParams.buyerCoinAddress).to.be.equal(USDCE_ADDRESS);
-    expect(trParams.aTokenAddress).to.be.equal(avUSDC_Address);
-    console.log("User1 USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC.e");
+    expect(trParams.buyerCoinAddress).to.be.equal(USDC_ADDRESS);
+    expect(trParams.aTokenAddress).to.be.equal(aUSDC_Address);
+    console.log("User1 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC");
     tx = await usdcContract.methods.approve(jAaveContract.address, toWei6Dec(2000)).send({from: user1});
     tx = await jAaveContract.buyTrancheAToken(3, toWei6Dec(2000), {from: user1});
     balTrA = await usdcTrAContract.balanceOf(user1)
-    console.log("User1 New USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC.e");
+    console.log("User1 New USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC");
     console.log("User1 trA tokens: " + fromWei6Dec(await usdcTrAContract.balanceOf(user1)) + " JUBA");
-    console.log("avUSDC_Address USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(avUSDC_Address).call()) + " USDC.e");
-    console.log("JAave USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(jAaveContract.address).call()) + " USDC.e");
-    console.log("JAave qiUSDC balance: " + fromWei6Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("aUSDC_Address USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(aUSDC_Address).call()) + " USDC");
+    console.log("JAave USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(jAaveContract.address).call()) + " USDC");
+    console.log("JAave aUSDC balance: " + fromWei6Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     trPar = await jAaveContract.trancheParameters(3);
     console.log("TrA price: " + fromWei6Dec(trPar[2].toString()));
     trAddresses = await jAaveContract.trancheAddresses(3); 
@@ -188,7 +188,7 @@ contract("JAave USDC.e & rewards", function (accounts) {
 
   
   it("user1 buys some token daiTrB", async function () {
-    console.log("User1 USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC.e");
+    console.log("User1 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC");
     trAddr = await jAaveContract.trancheAddresses(3);
     buyAddr = trAddr.buyerCoinAddress;
 
@@ -201,10 +201,10 @@ contract("JAave USDC.e & rewards", function (accounts) {
     tx = await jAaveContract.buyTrancheBToken(3, toWei6Dec(1000), {from: user1});
 
     balTrB = await usdcTrBContract.balanceOf(user1)
-    console.log("User1 New USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC.e");
+    console.log("User1 New USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(user1).call()) + " USDC");
     console.log("User1 trB tokens: " + fromWei6Dec(await usdcTrBContract.balanceOf(user1)) + " JUBB");
-    console.log("CErc20 USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(avUSDC_Address).call()) + " USDC.e");
-    console.log("JAave USDC.e balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("CErc20 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(aUSDC_Address).call()) + " USDC");
+    console.log("JAave USDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3, 0)));
     trAddresses = await jAaveContract.trancheAddresses(3);
     trPars = await jAaveContract.trancheParameters(3);
@@ -297,12 +297,12 @@ contract("JAave USDC.e & rewards", function (accounts) {
 
   it("user1 redeems token daiTrA", async function () {
     oldBal = fromWei6Dec(await usdcContract.methods.balanceOf(user1).call());
-    console.log("User1 Dai balance: " + oldBal + " USDC.e");
+    console.log("User1 Dai balance: " + oldBal + " USDC");
     bal = await usdcTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: " + fromWei(bal) + " JUBA");
     tot = await usdcTrAContract.totalSupply();
     console.log("trA tokens total: " + fromWei(tot) + " JUBA");
-    console.log("JAave qiUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("JAave aUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     tx = await usdcTrAContract.approve(jAaveContract.address, bal, {from: user1});
 
     availMktRew = await incentiveControllerContract.availableMarketsRewards(0)
@@ -323,12 +323,12 @@ contract("JAave USDC.e & rewards", function (accounts) {
     console.log(trARewInfo[2].toString(), trARewInfo[3].toString())
 
     newBal = fromWei6Dec(await usdcContract.methods.balanceOf(user1).call());
-    console.log("User1 New Dai balance: " + newBal + " USDC.e");
+    console.log("User1 New Dai balance: " + newBal + " USDC");
     bal = await usdcTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: " + fromWei(bal) + " JUBA");
-    console.log("User1 trA interest: " + (newBal - oldBal) + " USDC.e");
-    // console.log("CErc20 USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(avUSDC_Address).call()) + " USDC.e");
-    console.log("JAave qiUSDC.e balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("User1 trA interest: " + (newBal - oldBal) + " USDC");
+    // console.log("CErc20 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(aUSDC_Address).call()) + " USDC");
+    console.log("JAave aUSDC.e balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     console.log("JAave TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));
 
@@ -362,12 +362,12 @@ contract("JAave USDC.e & rewards", function (accounts) {
 
   it("user1 redeems token daiTrA", async function () {
     oldBal = fromWei6Dec(await usdcContract.methods.balanceOf(user1).call());
-    console.log("User1 Dai balance: " + oldBal + " USDC.e");
+    console.log("User1 Dai balance: " + oldBal + " USDC");
     bal = await usdcTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: " + fromWei(bal) + " JUBA");
     tot = await usdcTrAContract.totalSupply();
     console.log("trA tokens total: " + fromWei(tot) + " JUBA");
-    console.log("JAave qiUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("JAave aUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     tx = await usdcTrAContract.approve(jAaveContract.address, bal, {from: user1});
 
     availMkt = await incentiveControllerContract.availableMarkets(0)
@@ -403,12 +403,12 @@ contract("JAave USDC.e & rewards", function (accounts) {
     console.log("Rewards to be claimed after: " +trAEarn.toString())
 
     newBal = fromWei6Dec(await usdcContract.methods.balanceOf(user1).call());
-    console.log("User1 New Dai balance: " + newBal + " USDC.e");
+    console.log("User1 New Dai balance: " + newBal + " USDC");
     bal = await usdcTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: " + fromWei(bal) + " JUBA");
-    console.log("User1 trA interest: " + (newBal - oldBal) + " USDC.e");
-    // console.log("CErc20 USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(avUSDC_Address).call()) + " USDC.e");
-    console.log("JAave qiUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("User1 trA interest: " + (newBal - oldBal) + " USDC");
+    // console.log("CErc20 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(aUSDC_Address).call()) + " USDC");
+    console.log("JAave aUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     console.log("JAave TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));
 
@@ -511,12 +511,12 @@ contract("JAave USDC.e & rewards", function (accounts) {
 
   it("user1 redeems token daiTrA", async function () {
     oldBal = fromWei6Dec(await usdcContract.methods.balanceOf(user1).call());
-    console.log("User1 Dai balance: " + oldBal + " USDC.e");
+    console.log("User1 Dai balance: " + oldBal + " USDC");
     bal = await usdcTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: " + fromWei(bal) + " JUBA");
     tot = await usdcTrAContract.totalSupply();
     console.log("trA tokens total: " + fromWei(tot) + " JUBA");
-    console.log("JAave qiUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("JAave aUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     tx = await usdcTrAContract.approve(jAaveContract.address, bal, {from: user1});
     trPar = await jAaveContract.trancheParameters(3);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
@@ -524,12 +524,12 @@ contract("JAave USDC.e & rewards", function (accounts) {
     tx = await jAaveContract.redeemTrancheAToken(3, bal, {from: user1});
 
     newBal = fromWei6Dec(await usdcContract.methods.balanceOf(user1).call());
-    console.log("User1 New Dai balance: " + newBal + " USDC.e");
+    console.log("User1 New Dai balance: " + newBal + " USDC");
     bal = await usdcTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: " + fromWei(bal) + " JUBA");
-    console.log("User1 trA interest: " + (newBal - oldBal) + " USDC.e");
-    console.log("CErc20 USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(avUSDC_Address).call()) + " USDC.e");
-    console.log("JAave qiUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("User1 trA interest: " + (newBal - oldBal) + " USDC");
+    console.log("CErc20 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(aUSDC_Address).call()) + " USDC");
+    console.log("JAave aUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     console.log("JAave TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));
 
@@ -559,10 +559,10 @@ contract("JAave USDC.e & rewards", function (accounts) {
 
   it("user1 redeems token daiTrB", async function () {
     oldBal = fromWei6Dec(await usdcContract.methods.balanceOf(user1).call());
-    console.log("User1 Dai balance: " + oldBal + " USDC.e");
+    console.log("User1 Dai balance: " + oldBal + " USDC");
     bal = await usdcTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: " + fromWei(bal) + " JUBB");
-    console.log("JAave qiUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("JAave aUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     tx = await usdcTrBContract.approve(jAaveContract.address, bal, {from: user1});
     console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3, 0)));
     console.log("TrB value: " + fromWei6Dec(await jAaveContract.getTrBValue(3)));
@@ -570,12 +570,12 @@ contract("JAave USDC.e & rewards", function (accounts) {
     tx = await jAaveContract.redeemTrancheBToken(3, bal, {from: user1});
     
     newBal = fromWei6Dec(await usdcContract.methods.balanceOf(user1).call());
-    console.log("User1 New Dai balance: " + newBal + " USDC.e");
+    console.log("User1 New Dai balance: " + newBal + " USDC");
     bal = await usdcTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: " + fromWei(bal) + " JUBB");
-    console.log("User1 trB interest: " + (newBal - oldBal) + " USDC.e");
-    console.log("CErc20 USDC.e balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(avUSDC_Address).call()) + " USDC.e");
-    console.log("JAave qiUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avUSDC_Address)) + " qiUSDC");
+    console.log("User1 trB interest: " + (newBal - oldBal) + " USDC");
+    console.log("CErc20 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(aUSDC_Address).call()) + " USDC");
+    console.log("JAave aUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     console.log("TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
     console.log("TrB value: " + fromWei6Dec(await jAaveContract.getTrBValue(3)));
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));

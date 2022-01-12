@@ -42,8 +42,9 @@ const IncentivesController = artifacts.require("IncentivesController.sol");
 
 const MYERC20_TOKEN_SUPPLY = 20000000;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const AVAX_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-const avWAVAX_Address = '0xDFE521292EcE2A4f44242efBcD66Bc594CA9714B';
+const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const aWETH_Address = '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e';
 
 const MKT1_DECS = 18;
 const MKT2_DECS = 18;
@@ -124,7 +125,7 @@ contract("JAave Avax & rewards", function (accounts) {
     expect(chainlink1Contract.address).to.match(/0x[0-9a-fA-F]{40}/);
   });
 
-  it("user1 buys some token AVAX TrA", async function () {
+  it("user1 buys some token ETH TrA", async function () {
     trAddresses = await jAaveContract.trancheAddresses(0);
     trPars = await jAaveContract.trancheParameters(0);
     trPar = await jAaveContract.trancheParameters(0);
@@ -133,17 +134,17 @@ contract("JAave Avax & rewards", function (accounts) {
 
     trPar = await jAaveContract.trancheParameters(0);
     trParams = await jAaveContract.trancheAddresses(0);
-    expect(trParams.buyerCoinAddress).to.be.equal(AVAX_ADDRESS);
-    expect(trParams.aTokenAddress).to.be.equal(avWAVAX_Address);
-    console.log("user1 AVAX balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
+    expect(trParams.buyerCoinAddress).to.be.equal(ETH_ADDRESS);
+    expect(trParams.aTokenAddress).to.be.equal(aWETH_Address);
+    console.log("user1 ETH balance: " + fromWei(await web3.eth.getBalance(user1)) + " ETH");
 
     tx = await jAaveContract.buyTrancheAToken(0, toWei(10), {from: user1, value: toWei(10)});
     balTrA = await ethTrAContract.balanceOf(user1)
-    console.log("User1 New AVAX balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
-    console.log("User1 trA tokens: " + fromWei(await ethTrAContract.balanceOf(user1)) + " JAA");
+    console.log("User1 New ETH balance: " + fromWei(await web3.eth.getBalance(user1)) + " ETH");
+    console.log("User1 trA tokens: " + fromWei(await ethTrAContract.balanceOf(user1)) + " JEA");
 
-    console.log("JAave AVAX balance: " + fromWei(await await web3.eth.getBalance(jAaveContract.address)) + " AVAX");
-    console.log("JAave qiAVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("JAave ETH balance: " + fromWei(await await web3.eth.getBalance(jAaveContract.address)) + " ETH");
+    console.log("JAave aETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     trPar = await jAaveContract.trancheParameters(0);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
     trAddresses = await jAaveContract.trancheAddresses(0); 
@@ -156,8 +157,8 @@ contract("JAave Avax & rewards", function (accounts) {
   });
 
   
-  it("user1 buys some token daiTrB", async function () {
-    console.log("user1 AVAX balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
+  it("user1 buys some token ethTrB", async function () {
+    console.log("user1 ETH balance: " + fromWei(await web3.eth.getBalance(user1)) + " ETH");
     trAddr = await jAaveContract.trancheAddresses(0);
     buyAddr = trAddr.buyerCoinAddress;
 
@@ -169,10 +170,10 @@ contract("JAave Avax & rewards", function (accounts) {
     tx = await jAaveContract.buyTrancheBToken(0, toWei(10), {from: user1, value: toWei(10)});
 
     balTrB = await ethTrBContract.balanceOf(user1)
-    console.log("User1 New AVAX balance: " + fromWei(await web3.eth.getBalance(user1)) + " AVAX");
-    console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JAB");
-    console.log("avDAI AVAX balance: " + fromWei(await web3.eth.getBalance(avWAVAX_Address)) + " AVAX");
-    console.log("JAave AVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("User1 New ETH balance: " + fromWei(await web3.eth.getBalance(user1)) + " ETH");
+    console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JEB");
+    console.log("avDAI ETH balance: " + fromWei(await web3.eth.getBalance(aWETH_Address)) + " ETH");
+    console.log("JAave ETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1, 0)));
     trAddresses = await jAaveContract.trancheAddresses(0);
     trPars = await jAaveContract.trancheParameters(0);
@@ -263,14 +264,14 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log(rewTrATok.toString(), rewTrBTok.toString())
   });
 
-  it("user1 redeems token daiTrA", async function () {
+  it("user1 redeems token ethTrA", async function () {
     oldBal = fromWei(await web3.eth.getBalance(user1));
-    console.log("User1 AVAX balance: " + oldBal + " AVAX");
+    console.log("User1 ETH balance: " + oldBal + " ETH");
     bal = await ethTrAContract.balanceOf(user1);
-    console.log("User1 trA tokens: " + fromWei(bal) + " JAA");
+    console.log("User1 trA tokens: " + fromWei(bal) + " JEA");
     tot = await ethTrAContract.totalSupply();
-    console.log("trA tokens total: " + fromWei(tot) + " JAA");
-    console.log("JAave qiAVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("trA tokens total: " + fromWei(tot) + " JEA");
+    console.log("JAave aETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     tx = await ethTrAContract.approve(jAaveContract.address, bal, {from: user1});
 
     availMktRew = await incentiveControllerContract.availableMarketsRewards(0)
@@ -291,11 +292,11 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log(trARewInfo[2].toString(), trARewInfo[3].toString())
 
     newBal = fromWei(await web3.eth.getBalance(user1));
-    console.log("User1 New Avax balance: " + newBal + " AVAX");
+    console.log("User1 New Avax balance: " + newBal + " ETH");
     bal = await ethTrAContract.balanceOf(user1);
-    console.log("User1 trA tokens: " + fromWei(bal) + " JAA");
-    console.log("User1 trA interest: " + (newBal - oldBal) + " AVAX");
-    console.log("JAave new qiAVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("User1 trA tokens: " + fromWei(bal) + " JEA");
+    console.log("User1 trA interest: " + (newBal - oldBal) + " ETH");
+    console.log("JAave new aETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     console.log("JAave TrA Value: " + fromWei(await jAaveContract.getTrAValue(0)));
     console.log("JAave total Value: " + fromWei(await jAaveContract.getTotalValue(0)));
 
@@ -323,14 +324,14 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log(rewTrATok.toString(), rewTrBTok.toString())
   });
 
-  it("user1 redeems token daiTrA", async function () {
+  it("user1 redeems token ethTrA", async function () {
     oldBal = fromWei(await web3.eth.getBalance(user1));
-    console.log("User1 Avax balance: " + oldBal + " AVAX");
+    console.log("User1 Avax balance: " + oldBal + " ETH");
     bal = await ethTrAContract.balanceOf(user1);
-    console.log("User1 trA tokens: " + fromWei(bal) + " JAA");
+    console.log("User1 trA tokens: " + fromWei(bal) + " JEA");
     tot = await ethTrAContract.totalSupply();
-    console.log("trA tokens total: " + fromWei(tot) + " JAA");
-    console.log("JAave qiAVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("trA tokens total: " + fromWei(tot) + " JEA");
+    console.log("JAave aETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     tx = await ethTrAContract.approve(jAaveContract.address, bal, {from: user1});
 
     availMkt = await incentiveControllerContract.availableMarkets(0)
@@ -366,11 +367,11 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log("Rewards to be claimed after: " +trAEarn.toString())
 
     newBal = fromWei(await web3.eth.getBalance(user1));
-    console.log("User1 New Avax balance: " + newBal + " AVAX");
+    console.log("User1 New Avax balance: " + newBal + " ETH");
     bal = await ethTrAContract.balanceOf(user1);
-    console.log("User1 trA tokens: " + fromWei(bal) + " JAA");
-    console.log("User1 trA interest: " + (newBal - oldBal) + " AVAX");
-    console.log("JAave new AVAX balance: " + fromWei(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("User1 trA tokens: " + fromWei(bal) + " JEA");
+    console.log("User1 trA interest: " + (newBal - oldBal) + " ETH");
+    console.log("JAave new ETH balance: " + fromWei(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     console.log("JAave TrA Value: " + fromWei(await jAaveContract.getTrAValue(0)));
     console.log("JAave total Value: " + fromWei(await jAaveContract.getTotalValue(0)));
 
@@ -444,7 +445,7 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log("Hist. Rew. mkt0 TrB: " + fromWei(ret.toString()))
   });
 
-  it("user1 buys some other token daiTrA", async function () {
+  it("user1 buys some other token ethTrA", async function () {
     tx = await jAaveContract.buyTrancheAToken(0, toWei(5), {from: user1, value: toWei(5)});
 
     console.log("staker counter trA: " + (await jAaveContract.stakeCounterTrA(user1, 0)).toString())
@@ -470,14 +471,14 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log(rewTrATok.toString(), rewTrBTok.toString())
   });
 
-  it("user1 redeems token daiTrA", async function () {
+  it("user1 redeems token ethTrA", async function () {
     oldBal = fromWei(await web3.eth.getBalance(user1));
-    console.log("User1 Avax balance: " + oldBal + " AVAX");
+    console.log("User1 Avax balance: " + oldBal + " ETH");
     bal = await ethTrAContract.balanceOf(user1);
-    console.log("User1 trA tokens: " + fromWei(bal) + " JAA");
+    console.log("User1 trA tokens: " + fromWei(bal) + " JEA");
     tot = await ethTrAContract.totalSupply();
-    console.log("trA tokens total: " + fromWei(tot) + " JAA");
-    console.log("JAave qiAVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("trA tokens total: " + fromWei(tot) + " JEA");
+    console.log("JAave aETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     tx = await ethTrAContract.approve(jAaveContract.address, bal, {from: user1});
     trPar = await jAaveContract.trancheParameters(0);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
@@ -485,11 +486,11 @@ contract("JAave Avax & rewards", function (accounts) {
     tx = await jAaveContract.redeemTrancheAToken(0, bal, {from: user1});
 
     newBal = fromWei(await web3.eth.getBalance(user1));
-    console.log("User1 New Avax balance: " + newBal + " AVAX");
+    console.log("User1 New Avax balance: " + newBal + " ETH");
     bal = await ethTrAContract.balanceOf(user1);
-    console.log("User1 trA tokens: " + fromWei(bal) + " JAA");
-    console.log("User1 trA interest: " + (newBal - oldBal) + " AVAX");
-    console.log("JAave new qiAVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("User1 trA tokens: " + fromWei(bal) + " JEA");
+    console.log("User1 trA interest: " + (newBal - oldBal) + " ETH");
+    console.log("JAave new aETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     console.log("JAave TrA Value: " + fromWei(await jAaveContract.getTrAValue(0)));
     console.log("JAave total Value: " + fromWei(await jAaveContract.getTotalValue(0)));
 
@@ -517,12 +518,12 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log(rewTrATok.toString(), rewTrBTok.toString())
   });
 
-  it("user1 redeems token daiTrB", async function () {
+  it("user1 redeems token ethTrB", async function () {
     oldBal = fromWei(await web3.eth.getBalance(user1));
-    console.log("User1 Avax balance: " + oldBal + " AVAX");
+    console.log("User1 Avax balance: " + oldBal + " ETH");
     bal = await ethTrBContract.balanceOf(user1);
-    console.log("User1 trB tokens: " + fromWei(bal) + " JAB");
-    console.log("JAave qiAVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("User1 trB tokens: " + fromWei(bal) + " JEB");
+    console.log("JAave aETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     tx = await ethTrBContract.approve(jAaveContract.address, bal, {from: user1});
     console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1, 0)));
     console.log("TrB value: " + fromWei(await jAaveContract.getTrBValue(0)));
@@ -530,11 +531,11 @@ contract("JAave Avax & rewards", function (accounts) {
     tx = await jAaveContract.redeemTrancheBToken(0, bal, {from: user1});
     
     newBal = fromWei(await web3.eth.getBalance(user1));
-    console.log("User1 New Avax balance: " + newBal + " AVAX");
+    console.log("User1 New Avax balance: " + newBal + " ETH");
     bal = await ethTrBContract.balanceOf(user1);
-    console.log("User1 trB tokens: " + fromWei(bal) + " JAB");
-    console.log("User1 trB interest: " + (newBal - oldBal) + " AVAX");
-    console.log("JAave new AVAX balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWAVAX_Address)) + " qiAVAX");
+    console.log("User1 trB tokens: " + fromWei(bal) + " JEB");
+    console.log("User1 trB interest: " + (newBal - oldBal) + " ETH");
+    console.log("JAave new ETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     console.log("TrA Value: " + fromWei(await jAaveContract.getTrAValue(0)));
     console.log("TrB value: " + fromWei(await jAaveContract.getTrBValue(0)));
     console.log("JAave total Value: " + fromWei(await jAaveContract.getTotalValue(0)));

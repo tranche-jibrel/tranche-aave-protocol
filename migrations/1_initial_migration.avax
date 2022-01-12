@@ -21,21 +21,26 @@ var IncentivesController = artifacts.require('./IncentivesController');
 var Chainlink1 = artifacts.require('Chainlink1');
 
 //const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
-const WBTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
-const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-const USDT_ADDRESS = '0xdAC17F958D2ee523a2206206994597C13D831ec7'; 
+// const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+const AVAX_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+const WETH_E_ADDRESS = "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab"; // AVAX mainnet
+// const DAI_ADDRESS = '0xFf795577d9AC8bD7D90Ee22b6C1703490b6512FD';
+const DAI_E_ADDRESS = '0xd586e7f844cea2f87f50152665bcbc2c279d8d70';
+const WBTC_E_ADDRESS = '0x50b7545627a5162f82a992c33b87adc75187b218';
+const WAVAX_ADDRESS = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
+const USDC_E_ADDRESS = "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664";
 
-const aWETH_Address = '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e';
-const aDAI_Address = '0x028171bCA77440897B824Ca71D1c56caC55b68A3';
-const aWBCT_Address = '0x9ff58f4fFB29fA2266Ab25e75e2A8b3503311656';
-const aUSDC_Address = '0xBcca60bB61934080951369a648Fb03DF4F96263C';
-const aUSDT_Address = '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811';
-
-const LendingPoolAddressesProvider = '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5';
-const aaveIncentiveController = '0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5';
+// const LendingPoolAddressesProvider = '0x88757f2f99175387aB4C6a4b3067c77A695b0349';
+const LendingPoolAddressesProvider = '0xb6A86025F0FE1862B372cb0ca18CE3EDe02A318f'; // AVAX mainnet
+const aWETH_Address = '0x87b1f4cf9BD63f7BBD3eE1aD04E8F52540349347';
+const avWAVAX_Address = '0xDFE521292EcE2A4f44242efBcD66Bc594CA9714B';
+const avWETH_Address = '0x53f7c5869a859F0AeC3D334ee8B4Cf01E3492f21';
+const aDAI_Address = '0xdCf0aF9e59C002FA3AA091a46196b37530FD48a8';
+const avDAI_Address = '0x47AFa96Cdc9fAb46904A55a6ad4bf6660B53c38a';
+const avWBCT_Address = '0x686bEF2417b6Dc32C50a3cBfbCC3bb60E1e9a15D';
+const avUSDC_Address = '0x46A51127C3ce23fb7AB1DE06226147F446e4a857';
+// const aaveIncentiveController = '0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5';
+const aaveIncentiveController = '0x01D83Fe6A10D2f2B7AF17034343746188272cAc9';  // AVAX Mainnet
 
 const MYERC20_TOKEN_SUPPLY = 20000000;
 
@@ -57,10 +62,10 @@ module.exports = async (deployer, network, accounts) => {
     console.log("Tranches Deployer: " + JTDeployer.address);
 
     const JAinstance = await deployProxy(JAave, [JATinstance.address, JFCinstance.address, JTDeployer.address,
-      aaveIncentiveController, WETH_ADDRESS, 31536000], { from: factoryOwner });
+      aaveIncentiveController, WAVAX_ADDRESS, 31536000], { from: factoryOwner });
     console.log('JAave Deployed: ', JAinstance.address);
 
-    await deployer.deploy(WETHGateway, WETH_ADDRESS, JAinstance.address);
+    await deployer.deploy(WETHGateway, WAVAX_ADDRESS, JAinstance.address);
     const JWGinstance = await WETHGateway.deployed();
     console.log('WETHGateway Deployed: ', JWGinstance.address);
 
@@ -72,18 +77,16 @@ module.exports = async (deployer, network, accounts) => {
 
     await JTDeployer.setJAaveAddresses(JAinstance.address, JATinstance.address, { from: factoryOwner });
 
-    tx = await JAinstance.addTrancheToProtocol(ETH_ADDRESS, aWETH_Address, "jEthTrancheAToken", "JEA", "jEthTrancheBToken", "JEB", web3.utils.toWei("0.04", "ether"), 18, { from: factoryOwner });
-    // console.log(tx.receipt.gasUsed);
+    await JAinstance.addTrancheToProtocol(AVAX_ADDRESS, avWAVAX_Address, "jAvaxTrancheAToken", "JAA", "jAVAXTrancheBToken", "JAB", web3.utils.toWei("0.04", "ether"), 18, { from: factoryOwner });
     trParams = await JAinstance.trancheAddresses(0);
     let EthTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
-    console.log("ETH Tranche A Token Address: " + EthTrA.address);
+    console.log("AVAX Tranche A Token Address: " + EthTrA.address);
     let EthTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
-    console.log("ETH Tranche B Token Address: " + EthTrB.address);
+    console.log("AVAX Tranche B Token Address: " + EthTrB.address);
 
     await JAinstance.setTrancheDeposit(0, true);
 
-    tx = await JAinstance.addTrancheToProtocol(DAI_ADDRESS, aDAI_Address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", web3.utils.toWei("0.03", "ether"), 18, { from: factoryOwner });
-    // console.log(tx.receipt.gasUsed);
+    await JAinstance.addTrancheToProtocol(DAI_E_ADDRESS, avDAI_Address, "jDaiTrancheAToken", "JDA", "jDaiTrancheBToken", "JDB", web3.utils.toWei("0.03", "ether"), 18, { from: factoryOwner });
     trParams = await JAinstance.trancheAddresses(1);
     let DaiTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
     console.log("DAI Tranche A Token Address: " + DaiTrA.address);
@@ -92,8 +95,7 @@ module.exports = async (deployer, network, accounts) => {
 
     await JAinstance.setTrancheDeposit(1, true);
 
-    tx = await JAinstance.addTrancheToProtocol(WBTC_ADDRESS, aWBCT_Address, "jWBTCTrancheAToken", "JWBA", "jWBTCTrancheBToken", "JWBB", web3.utils.toWei("0.03", "ether"), 8, { from: factoryOwner });
-    // console.log(tx.receipt.gasUsed);
+    await JAinstance.addTrancheToProtocol(WBTC_E_ADDRESS, avWBCT_Address, "jWBTCTrancheAToken", "JWBA", "jWBTCTrancheBToken", "JWBB", web3.utils.toWei("0.03", "ether"), 8, { from: factoryOwner });
     trParams = await JAinstance.trancheAddresses(2);
     let WbtcTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
     console.log("WBTC Tranche A Token Address: " + WbtcTrA.address);
@@ -102,8 +104,7 @@ module.exports = async (deployer, network, accounts) => {
 
     await JAinstance.setTrancheDeposit(2, true);
 
-    tx = await JAinstance.addTrancheToProtocol(USDC_ADDRESS, aUSDC_Address, "jUSDCTrancheAToken", "JUBA", "jUSDCTrancheBToken", "JUBB", web3.utils.toWei("0.03", "ether"), 6, { from: factoryOwner });
-    // console.log(tx.receipt.gasUsed);
+    await JAinstance.addTrancheToProtocol(USDC_E_ADDRESS, avUSDC_Address, "jUSDCTrancheAToken", "JUBA", "jUSDCTrancheBToken", "JUBB", web3.utils.toWei("0.03", "ether"), 6, { from: factoryOwner });
     trParams = await JAinstance.trancheAddresses(3);
     let UsdcTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
     console.log("USDC Tranche A Token Address: " + UsdcTrA.address);
@@ -111,16 +112,6 @@ module.exports = async (deployer, network, accounts) => {
     console.log("USDC Tranche B Token Address: " + UsdcTrB.address);
 
     await JAinstance.setTrancheDeposit(3, true);
-
-    tx = await JAinstance.addTrancheToProtocol(USDT_ADDRESS, aUSDT_Address, "jUSDTTrancheAToken", "JUTA", "jUSDTTrancheBToken", "JUTB", web3.utils.toWei("0.03", "ether"), 6, { from: factoryOwner });
-    // console.log(tx.receipt.gasUsed);
-    trParams = await JAinstance.trancheAddresses(4);
-    let UsdtTrA = await JTrancheAToken.at(trParams.ATrancheAddress);
-    console.log("USDT Tranche A Token Address: " + UsdtTrA.address);
-    let UsdtTrB = await JTrancheBToken.at(trParams.BTrancheAddress);
-    console.log("USDT Tranche B Token Address: " + UsdtTrB.address);
-
-    await JAinstance.setTrancheDeposit(4, true);
 
     const myChainlink1Inst = await deployProxy(Chainlink1, [], {from: factoryOwner});
     console.log('myChainlink1 Deployed: ', myChainlink1Inst.address);
