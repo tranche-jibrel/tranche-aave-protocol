@@ -33,16 +33,14 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @param _feesCollector fees collector contract address
      * @param _tranchesDepl tranches deployer contract address
      * @param _aaveIncentiveController Aave incentive controller address (mainnet: 0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5)
-     * @param _wethAddress weth / wmatic contract address
-     * @param _rewardsToken rewards token address (slice token address)
-     * @param _blocksPerYear blocks / year
+     * @param _wethAddress weth / wmatic / wavax contract address
+     * @param _blocksPerYear blocks / year or seconds in a year
      */
     function initialize(address _adminTools, 
             address _feesCollector, 
             address _tranchesDepl,
             address _aaveIncentiveController,
             address _wethAddress,
-            address _rewardsToken,
             uint256 _blocksPerYear) external initializer() {
         OwnableUpgradeable.__Ownable_init();
         adminToolsAddress = _adminTools;
@@ -52,7 +50,6 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         redeemTimeout = 3; //default
         wrappedEthAddress = _wethAddress;
         totalBlocksPerYear = _blocksPerYear;
-        rewardsToken = _rewardsToken;
     }
 
     /**
@@ -71,28 +68,35 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @param _adminTools price oracle address
      * @param _feesCollector fees collector contract address
      * @param _tranchesDepl tranches deployer contract address
+     * @param _aaveIncentiveController Aave incentive controller address
+     * @param _wethAddress weth / wmatic / wavax contract address
      */
     function setNewEnvironment(address _adminTools, 
             address _feesCollector, 
             address _tranchesDepl,
             address _aaveIncentiveController,
-            address _wethAddress,
-            address _rewardsToken) external onlyOwner{
+            address _wethAddress) external onlyOwner{
         require((_adminTools != address(0)) && (_feesCollector != address(0)) && (_tranchesDepl != address(0)), "JAave: check addresses");
         adminToolsAddress = _adminTools;
         feesCollectorAddress = _feesCollector;
         tranchesDeployerAddress = _tranchesDepl;
         aaveIncentiveControllerAddress = _aaveIncentiveController;
         wrappedEthAddress = _wethAddress;
-        rewardsToken = _rewardsToken;
     }
 
     /**
      * @dev set incentive rewards address
      * @param _incentivesController incentives controller contract address
      */
-    function setincentivesControllerAddress(address _incentivesController) external onlyAdmins {
+    function setIncentivesControllerAddress(address _incentivesController) external override onlyAdmins {
         incentivesControllerAddress = _incentivesController;
+    }
+
+    /**
+     * @dev get incentive rewards address
+     */
+    function getIncentivesControllerAddress() external view override returns (address) {
+        return incentivesControllerAddress;
     }
 
     /**
@@ -264,17 +268,17 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         trancheAddresses[tranchePairsCounter].buyerCoinAddress = _buyerCoinAddress;
         trancheAddresses[tranchePairsCounter].aTokenAddress = _aTokenAddress;
         trancheAddresses[tranchePairsCounter].ATrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, msg.sender, rewardsToken);
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheATokens(_nameA, _symbolA, tranchePairsCounter);
         trancheAddresses[tranchePairsCounter].BTrancheAddress = 
-                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, msg.sender, rewardsToken); 
+                IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, tranchePairsCounter); 
         
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
         trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixedRpb;
-        trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.number;
+        trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.timestamp;
         // if we would like to have always 18 decimals
         trancheParameters[tranchePairsCounter].storedTrancheAPrice = uint256(1e18);
 
-        trancheParameters[tranchePairsCounter].redemptionPercentage = 9950;  //default value 99.5%
+        trancheParameters[tranchePairsCounter].redemptionPercentage = 10000;  //default value 100%, no fees
 
         calcRPBFromPercentage(tranchePairsCounter); // initialize tranche A RPB
 
@@ -299,10 +303,13 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      */
     function setTrancheAExchangeRate(uint256 _trancheNum) internal returns (uint256) {
         calcRPBFromPercentage(_trancheNum);
-        uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
-        uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
+        // uint256 deltaBlocks = (block.number).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
+        uint256 deltaTime = (block.timestamp).sub(trancheParameters[_trancheNum].trancheALastActionBlock);
+        // uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaBlocks);
+        uint256 deltaPrice = (trancheParameters[_trancheNum].trancheACurrentRPB).mul(deltaTime);
         trancheParameters[_trancheNum].storedTrancheAPrice = (trancheParameters[_trancheNum].storedTrancheAPrice).add(deltaPrice);
-        trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
+        // trancheParameters[_trancheNum].trancheALastActionBlock = block.number;
+        trancheParameters[_trancheNum].trancheALastActionBlock = block.timestamp;
         return trancheParameters[_trancheNum].storedTrancheAPrice;
     }
 
@@ -426,7 +433,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @param _amount amount of tranche A tokens
      * @param _time time to be considered the deposit
      */
-    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external onlyAdmins {
+    function setTrAStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external override onlyAdmins {
         stakeCounterTrA[_account][_trancheNum] = _stkNum;
         StakingDetails storage details = stakingDetailsTrancheA[_account][_trancheNum][_stkNum];
         details.startTime = _time;
@@ -476,7 +483,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
      * @param _amount amount of tranche B tokens
      * @param _time time to be considered the deposit
      */
-    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external onlyAdmins {
+    function setTrBStakingDetails(uint256 _trancheNum, address _account, uint256 _stkNum, uint256 _amount, uint256 _time) external override onlyAdmins {
         stakeCounterTrB[_account][_trancheNum] = _stkNum;
         StakingDetails storage details = stakingDetailsTrancheB[_account][_trancheNum][_stkNum];
         details.startTime = _time;
@@ -590,7 +597,8 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         uint256 userAmount = normAmount.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, userAmount, msg.sender);
         uint256 feesAmount = normAmount.sub(userAmount);
-        aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
+        if (feesAmount > 0)
+            aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
         
         // claim and transfer rewards to msg.sender. Be sure to wait for this function to be completed! 
         bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);
@@ -677,7 +685,8 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         uint256 userAmount = normAmount.mul(trancheParameters[_trancheNum].redemptionPercentage).div(PERCENT_DIVIDER);
         aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, userAmount, msg.sender);
         uint256 feesAmount = normAmount.sub(userAmount);
-        aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
+        if (feesAmount > 0)
+            aaveWithdraw(trancheAddresses[_trancheNum].buyerCoinAddress, feesAmount, feesCollectorAddress);
 
         // claim and transfer rewards to msg.sender. Be sure to wait for this function to be completed! 
         bool rewClaimCompleted = IIncentivesController(incentivesControllerAddress).claimRewardsAllMarkets(msg.sender);

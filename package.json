@@ -33,7 +33,6 @@
     "mocha": "latest",
     "truffle": "latest",
     "truffle-contract-size": "latest",
-    "truffle-flattener": "latest",
     "web3": "latest"
   },
   "devDependencies": {
@@ -45,7 +44,8 @@
     "chai-bn": "^0.2.1",
     "eth-gas-reporter": "^0.2.22",
     "ganache-cli": "6.12.1",
+    "ganache-time-traveler": "^1.0.16",
     "solidity-coverage": "^0.7.16",
-    "truffle-plugin-verify": "^0.5.8"
+    "truffle-plugin-verify": "^0.5.20"
   }
 }

@@ -8,9 +8,10 @@ pragma solidity 0.6.12;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
+import "./interfaces/IJTranchesDeployer.sol";
+import "./interfaces/IJAdminTools.sol";
 import "./JTrancheAToken.sol";
 import "./JTrancheBToken.sol";
-import "./interfaces/IJTranchesDeployer.sol";
 import "./JTranchesDeployerStorage.sol";
 
 contract JTranchesDeployer is OwnableUpgradeable, JTranchesDeployerStorage, IJTranchesDeployer {
@@ -20,8 +21,9 @@ contract JTranchesDeployer is OwnableUpgradeable, JTranchesDeployerStorage, IJTr
         OwnableUpgradeable.__Ownable_init();
     }
 
-    function setJAaveAddress(address _jAave) external onlyOwner {
-        jAaveAddress = _jAave;
+    function setJAaveAddresses(address _jAaveAddress, address _jATAddress) external onlyOwner {
+        jAaveAddress = _jAaveAddress;
+        jAdminToolsAddress = _jATAddress;
     }
 
     modifier onlyProtocol() {
@@ -31,26 +33,28 @@ contract JTranchesDeployer is OwnableUpgradeable, JTranchesDeployerStorage, IJTr
 
     function deployNewTrancheATokens(string memory _nameA, 
             string memory _symbolA, 
-            address _sender,
-            address _rewardToken) external override onlyProtocol returns (address) {
-        JTrancheAToken jTrancheA = new JTrancheAToken();
-        jTrancheA.initialize(_nameA, _symbolA);
+            uint256 _trNum) external override onlyProtocol returns (address) {
+        JTrancheAToken jTrancheA = new JTrancheAToken(_nameA, _symbolA, _trNum);
         jTrancheA.setJAaveMinter(msg.sender); 
-        jTrancheA.setRewardTokenAddress(_rewardToken);
-        jTrancheA.transferOwnership(_sender);
+        // add tranche address to admins!
+        IJAdminTools(jAdminToolsAddress).addAdmin(address(jTrancheA));
         return address(jTrancheA);
     }
 
     function deployNewTrancheBTokens(string memory _nameB, 
             string memory _symbolB, 
-            address _sender,
-            address _rewardToken) external override onlyProtocol returns (address) {
-        JTrancheBToken jTrancheB = new JTrancheBToken();
-        jTrancheB.initialize(_nameB, _symbolB);
+            uint256 _trNum) external override onlyProtocol returns (address) {
+        JTrancheBToken jTrancheB = new JTrancheBToken(_nameB, _symbolB, _trNum);
         jTrancheB.setJAaveMinter(msg.sender);
-        jTrancheB.setRewardTokenAddress(_rewardToken);
-        jTrancheB.transferOwnership(_sender);
+        // add tranche address to admins!
+        IJAdminTools(jAdminToolsAddress).addAdmin(address(jTrancheB));
         return address(jTrancheB);
+    }
+
+    function setNewJAaveTokens(address _newJAave, address _trAToken, address _trBToken) external onlyOwner {
+        require((_newJAave != address(0)) && (_trAToken != address(0)) && (_trBToken != address(0)), "TrancheDeployer: some address is not allowed");
+        JTrancheAToken(_trAToken).setJAaveMinter(_newJAave);
+        JTrancheAToken(_trBToken).setJAaveMinter(_newJAave);
     }
 
 }
