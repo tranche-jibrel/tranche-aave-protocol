@@ -583,5 +583,161 @@ module.exports = async (deployer, network, accounts) => {
 
     console.log(`REACT_APP_AAVE_TRANCHE_TOKENS=${tranche1A.address},${tranche2A.address},${tranche3A.address},${tranche4A.address},${tranche5A.address},${tranche6A.address},${tranche7A.address},
     ${tranche1B.address},${tranche2B.address},${tranche3B.address},${tranche4B.address},${tranche5B.address},${tranche6B.address},${tranche7B.address}`)
+  } else if(network === 'mainnet') {
+    let {
+      AAVE_POOL, AAVE_INCENTIVE_ADDRESS, WETH_ADDRESS,
+      ADMIN_TOOLS, FEE_COLLECTOR_ADDRESS, WETH_GATEWAY, MOCK_INCENTIVE_CONTROLLER, AAVE_DEPLOYER, AAVE_TRANCHE_ADDRESS,
+      TRANCHE_1_TOKEN_ADDRESS, TRANCHE_1_ATOKEN_ADDRESS,
+      TRANCHE_2_TOKEN_ADDRESS, TRANCHE_2_ATOKEN_ADDRESS,
+      TRANCHE_3_TOKEN_ADDRESS, TRANCHE_3_ATOKEN_ADDRESS,
+      TRANCHE_4_TOKEN_ADDRESS, TRANCHE_4_ATOKEN_ADDRESS,
+      TRANCHE_5_TOKEN_ADDRESS, TRANCHE_5_ATOKEN_ADDRESS,
+      TRANCHE_6_TOKEN_ADDRESS, TRANCHE_6_ATOKEN_ADDRESS,
+      TRANCHE_7_TOKEN_ADDRESS, TRANCHE_7_ATOKEN_ADDRESS,
+      TRANCHE_8_TOKEN_ADDRESS, TRANCHE_8_ATOKEN_ADDRESS,
+    } = process.env;
+    const factoryOwner = accounts[0];
+    let JATinstance = null;
+    let JFCinstance = null;
+    let JWGinstance = null
+    let JTDeployer = null;
+    let JAinstance = null;
+    if (!ADMIN_TOOLS) {
+      JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
+      console.log('JAdminTools Deployed: ', JATinstance.address);
+    } else {
+      JATinstance = await JAdminTools.at(ADMIN_TOOLS);
+    }
+    if (!FEE_COLLECTOR_ADDRESS) {
+      JFCinstance = await deployProxy(JFeesCollector, [JATinstance.address], { from: factoryOwner });
+      console.log('JFeesCollector Deployed: ', JFCinstance.address);
+    } else {
+      JFCinstance = {
+        address: FEE_COLLECTOR_ADDRESS
+      }
+    }
+    if (!AAVE_DEPLOYER) {
+      JTDeployer = await deployProxy(JTranchesDeployer, [], { from: factoryOwner });
+      console.log("AAVE_DEPLOYER " + JTDeployer.address);
+      await JATinstance.addAdmin(JTDeployer.address, { from: factoryOwner })
+      console.log('admin added 1');
+    } else {
+      JTDeployer = await JTranchesDeployer.at(AAVE_DEPLOYER);
+    }
+
+    if (!AAVE_TRANCHE_ADDRESS) {
+      JAinstance = await deployProxy(JAave, [JATinstance.address, JFCinstance.address, JTDeployer.address,
+        AAVE_INCENTIVE_ADDRESS, WETH_ADDRESS, 31557600], { from: factoryOwner });
+      console.log('AAVE_TRANCHE_ADDRESS', JAinstance.address);
+      await JTDeployer.setJAaveAddresses(JAinstance.address, JATinstance.address, { from: factoryOwner });
+      console.log('aave deployer 1');
+      await JATinstance.addAdmin(JAinstance.address, { from: factoryOwner })
+      console.log('admin added 2');
+    } else {
+      JAinstance = await JAave.at(AAVE_TRANCHE_ADDRESS);
+    }
+
+    // if (!WETH_GATEWAY) {
+    //   await deployer.deploy(WETHGateway, WETH_ADDRESS, JAinstance.address);
+    //   JWGinstance = await WETHGateway.deployed();
+    //   console.log('WETH_GATEWAY', JWGinstance.address);
+    //   await JWGinstance.setJAaveAddress(JAinstance.address);
+    //   await JAinstance.setWETHGatewayAddress(JWGinstance.address, { from: factoryOwner });
+    //   console.log('aave deployer 2');
+    // } else {
+    //   JWGinstance = await WETHGateway.at(WETH_GATEWAY)
+    //   await JWGinstance.setJAaveAddress(JAinstance.address);
+    // }
+
+    if (!AAVE_TRANCHE_ADDRESS) {
+      await JAinstance.setAavePoolAddressProvider(AAVE_POOL, { from: factoryOwner });
+      console.log('aave deployer 3');
+    }
+
+    //tranche 1 1 FEI/aFEI 18 decimals,0.24%
+    await JAinstance.addTrancheToProtocol(TRANCHE_1_TOKEN_ADDRESS, TRANCHE_1_ATOKEN_ADDRESS, "Tranche A - Aave FEI", "aaFEI", "Tranche B - Aave FEI", "baFEI", web3.utils.toWei("0.0024", "ether"), 18, { from: factoryOwner });
+    await JAinstance.setTrancheDeposit(0, true, { from: factoryOwner });
+    console.log('added tranche 1')
+
+    //tranche 2 USDT/aUSDT 6 decimals,1.04%
+    await JAinstance.addTrancheToProtocol(TRANCHE_2_TOKEN_ADDRESS, TRANCHE_2_ATOKEN_ADDRESS, "Tranche A - Aave USDT", "aaUSDT", "Tranche B - Aave USDT", "baUSDT", web3.utils.toWei("0.0104", "ether"), 6, { from: factoryOwner });
+    await JAinstance.setTrancheDeposit(1, true, { from: factoryOwner });
+    console.log('added tranche 2')
+
+    //tranche 3 USDC/aUSDC 6 decimals, 1.4%
+    await JAinstance.addTrancheToProtocol(TRANCHE_3_TOKEN_ADDRESS, TRANCHE_3_ATOKEN_ADDRESS, "Tranche A - Aave USDC", "aaUSDC", "Tranche B - Aave USDC", "baUSDC", web3.utils.toWei("0.014", "ether"), 6, { from: factoryOwner });
+    await JAinstance.setTrancheDeposit(2, true, { from: factoryOwner });
+    console.log('added tranche 3');
+
+    //tranche 4  GUSD/aGUSD 2 decimals 0.32%
+    await JAinstance.addTrancheToProtocol(TRANCHE_4_TOKEN_ADDRESS, TRANCHE_4_ATOKEN_ADDRESS, "Tranche A - Aave GUSD", "aaGUSD", "Tranche B - Aave GUSD", "baGUSD", web3.utils.toWei("0.0032", "ether"), 2, { from: factoryOwner });
+    await JAinstance.setTrancheDeposit(3, true, { from: factoryOwner });
+    console.log('added tranche 4');
+
+    //tranche 5 DAI/aDAI 18 decimals 0.96%
+    await JAinstance.addTrancheToProtocol(TRANCHE_5_TOKEN_ADDRESS, TRANCHE_5_ATOKEN_ADDRESS, "Tranche A - Aave DAI", "aaDAI", "Tranche B - Aave DAI", "baDAI", web3.utils.toWei("0.0096", "ether"), 18, { from: factoryOwner });
+    await JAinstance.setTrancheDeposit(4, true, { from: factoryOwner });
+    console.log('added tranche 5');
+
+
+    //tranche 6 CRV/aCRV 18 decimals 1.6%
+    await JAinstance.addTrancheToProtocol(TRANCHE_6_TOKEN_ADDRESS, TRANCHE_6_ATOKEN_ADDRESS, "Tranche A - Aave CRV", "aaCRV", "Tranche B - Aave CRV", "baCRV", web3.utils.toWei("0.016", "ether"), 18, { from: factoryOwner });
+    await JAinstance.setTrancheDeposit(5, true, { from: factoryOwner });
+    console.log('added tranche 6');
+
+    //tranche 7 BAL/aBAL 18 decimals 0.12%
+    await JAinstance.addTrancheToProtocol(TRANCHE_7_TOKEN_ADDRESS, TRANCHE_7_ATOKEN_ADDRESS, "Tranche A - Aave BAL", "aaBAL", "Tranche B - Aave BAL", "baBAL", web3.utils.toWei("0.0012", "ether"), 18, { from: factoryOwner });
+    await JAinstance.setTrancheDeposit(6, true, { from: factoryOwner });
+    console.log('added tranche 7');
+
+    //tranche 8 BUSD/aBUSD 18 decimals 0.08%
+    await JAinstance.addTrancheToProtocol(TRANCHE_8_TOKEN_ADDRESS, TRANCHE_8_ATOKEN_ADDRESS, "Tranche A - Aave BUSD", "aaBUSD", "Tranche B - Aave BUSD", "baBUSD", web3.utils.toWei("0.0008", "ether"), 18, { from: factoryOwner });
+    await JAinstance.setTrancheDeposit(7, true, { from: factoryOwner });
+    console.log('added tranche 8');
+
+    if (!MOCK_INCENTIVE_CONTROLLER) {
+      const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
+      console.log("MOCK_INCENTIVE_CONTROLLER " + JIController.address);
+      await JAinstance.setIncentivesControllerAddress(JIController.address);
+      console.log('incentive controller setup')
+    } else {
+      await JAinstance.setIncentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
+      console.log('incentive controller setup')
+    }
+
+    trParams = await JAinstance.trancheAddresses(0);
+    let tranche1A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche1B = await JTrancheBToken.at(trParams.BTrancheAddress);
+    trParams = await JAinstance.trancheAddresses(1);
+    let tranche2A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche2B = await JTrancheBToken.at(trParams.BTrancheAddress);
+    trParams = await JAinstance.trancheAddresses(2);
+    let tranche3A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche3B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+    trParams = await JAinstance.trancheAddresses(3);
+    let tranche4A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche4B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+    trParams = await JAinstance.trancheAddresses(4);
+    let tranche5A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche5B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+    trParams = await JAinstance.trancheAddresses(5);
+    let tranche6A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche6B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+    trParams = await JAinstance.trancheAddresses(6);
+    let tranche7A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche7B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+
+    trParams = await JAinstance.trancheAddresses(7);
+    let tranche8A = await JTrancheAToken.at(trParams.ATrancheAddress);
+    let tranche8B = await JTrancheBToken.at(trParams.BTrancheAddress);
+
+    console.log(`REACT_APP_AAVE_TRANCHE_TOKENS=${tranche1A.address},${tranche2A.address},${tranche3A.address},${tranche4A.address},${tranche5A.address},${tranche6A.address},${tranche7A.address},${tranche8A.address},
+    ${tranche1B.address},${tranche2B.address},${tranche3B.address},${tranche4B.address},${tranche5B.address},${tranche6B.address},${tranche7B.address},${tranche8B.address}`)
+
   }
 }
