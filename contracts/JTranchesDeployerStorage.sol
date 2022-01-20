@@ -4,7 +4,7 @@
  * @summary: Jibrel Compound Tranche Deployer Storage
  * @author: Jibrel Team
  */
-pragma solidity 0.6.12;
+pragma solidity 0.8.8;
 
 
 contract JTranchesDeployerStorage {

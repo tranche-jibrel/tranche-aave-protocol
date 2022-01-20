@@ -30,11 +30,11 @@ const JTrancheBToken = artifacts.require('JTrancheBToken');
 
 // const MYERC20_TOKEN_SUPPLY = 5000000;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const WBTCE_HOLDER = "0x652aD82d4CcbA3b162094b7bee69436d36754317";
-const WBTCE_ADDRESS = "0x50b7545627a5162F82A992c33b87aDc75187B218";
-const avWBTC_Address = '0x686bEF2417b6Dc32C50a3cBfbCC3bb60E1e9a15D';
+const WBTC_HOLDER = "0xABDe2F02fE84e083e1920471b54C3612456365Ef";
+const WBTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
+const aWBCT_Address = '0x9ff58f4fFB29fA2266Ab25e75e2A8b3503311656';
 
-const UnBlockedAccount = '0x652aD82d4CcbA3b162094b7bee69436d36754317';
+const UnBlockedAccount = '0xABDe2F02fE84e083e1920471b54C3612456365Ef';
 
 let wbtcContract, jFCContract, jATContract, jTrDeplContract, jAaveContract;
 let ethTrAContract, ethTrBContract, daiTrAContract, daiTrBContract, wbtcTrAContract, wbtcTrBContract;
@@ -45,7 +45,7 @@ const toWei = (x) => web3.utils.toWei(x.toString());
 const fromWei8Dec = (x) => x / Math.pow(10, 8);
 const toWei8Dec = (x) => x * Math.pow(10, 8);
 
-contract("WBTC.e JAave", function (accounts) {
+contract("WBTC JAave", function (accounts) {
 
   it("ETH balances", async function () {
     //accounts = await web3.eth.getAccounts();
@@ -56,20 +56,20 @@ contract("WBTC.e JAave", function (accounts) {
     console.log(await web3.eth.getBalance(user1));
   });
 
-  it("WBTC.e total Supply sent to user1", async function () {
-    wbtcContract = new web3.eth.Contract(WBTC_ABI, WBTCE_ADDRESS);
+  it("WBTC total Supply sent to user1", async function () {
+    wbtcContract = new web3.eth.Contract(WBTC_ABI, WBTC_ADDRESS);
     result = await wbtcContract.methods.totalSupply().call();
     console.log(result.toString())
-    console.log("UnBlockedAccount WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(WBTCE_HOLDER).call()) + " WBTC.e");
+    console.log("UnBlockedAccount WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(WBTC_HOLDER).call()) + " WBTC");
 
     // send a couple of AVAX to unblocked account so to pay fees
-    await web3.eth.sendTransaction({to: WBTCE_HOLDER, from: user1, value: web3.utils.toWei('2')})
-    console.log(await web3.eth.getBalance(WBTCE_HOLDER));
+    await web3.eth.sendTransaction({to: WBTC_HOLDER, from: user1, value: web3.utils.toWei('2')})
+    console.log(await web3.eth.getBalance(WBTC_HOLDER));
     console.log(await web3.eth.getBalance(user1));
 
-    await wbtcContract.methods.transfer(user1, toWei8Dec(10)).send({from: WBTCE_HOLDER})
-    console.log("UnBlockedAccount WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(WBTCE_HOLDER).call()) + " WBTC.e");
-    console.log("user1 WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC.e");
+    await wbtcContract.methods.transfer(user1, toWei8Dec(10)).send({from: WBTC_HOLDER})
+    console.log("UnBlockedAccount WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(WBTC_HOLDER).call()) + " WBTC");
+    console.log("user1 WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC");
   });
 
   it("All other contracts ok", async function () {
@@ -142,16 +142,16 @@ contract("WBTC.e JAave", function (accounts) {
     console.log("param tranche A: " + JSON.stringify(trPar, ["trancheAFixedPercentage", "trancheALastActionBlock", "storedTrancheAPrice", 
         "trancheACurrentRPB", "redemptionPercentage", "qiTokenDecimals", "underlyingDecimals"]));
     trParams = await jAaveContract.trancheAddresses(2);
-    expect(trParams.buyerCoinAddress).to.be.equal(WBTCE_ADDRESS);
-    expect(trParams.aTokenAddress).to.be.equal(avWBTC_Address);
-    console.log("User1 WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC.e");
+    expect(trParams.buyerCoinAddress).to.be.equal(WBTC_ADDRESS);
+    expect(trParams.aTokenAddress).to.be.equal(aWBCT_Address);
+    console.log("User1 WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC");
     tx = await wbtcContract.methods.approve(jAaveContract.address, toWei8Dec(1)).send({from: user1});
     tx = await jAaveContract.buyTrancheAToken(2, toWei8Dec(1), {from: user1});
-    console.log("User1 New WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC.e");
+    console.log("User1 New WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC");
     console.log("User1 trA tokens: " + fromWei(await wbtcTrAContract.balanceOf(user1)) + " JWBA");
-    // console.log("CErc20 WBTC.e balance: " + fromWei8Dec(await wbtcContract.balanceOf(cERC20Contract.address), "ether") + " WBTC.e");
-    console.log("JAave WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(jAaveContract.address).call()) + " WBTC.e");
-    console.log("JAave avWBTC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWBTC_Address)) + " avWBTC");
+    // console.log("CErc20 WBTC balance: " + fromWei8Dec(await wbtcContract.balanceOf(cERC20Contract.address), "ether") + " WBTC");
+    console.log("JAave WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(jAaveContract.address).call()) + " WBTC");
+    console.log("JAave aWBTC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWBCT_Address)) + " aWBTC");
     trPar = await jAaveContract.trancheParameters(2);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
     trAddresses = await jAaveContract.trancheAddresses(2); //.cTokenAddress;
@@ -177,7 +177,7 @@ contract("WBTC.e JAave", function (accounts) {
   });
 
   it("user1 buys some token wbtcTrB", async function () {
-    console.log("User1 WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC.e");
+    console.log("User1 WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC");
     trAddr = await jAaveContract.trancheAddresses(2);
     buyAddr = trAddr.buyerCoinAddress;
     console.log("Tranche Buyer Coin address: " + buyAddr);
@@ -188,10 +188,10 @@ contract("WBTC.e JAave", function (accounts) {
     console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(2, toWei("1"))));
     tx = await wbtcContract.methods.approve(jAaveContract.address, toWei8Dec(1)).send({from: user1});
     tx = await jAaveContract.buyTrancheBToken(2, toWei8Dec(1), {from: user1});
-    console.log("User1 New WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC.e");
+    console.log("User1 New WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call()) + " WBTC");
     console.log("User1 trB tokens: " + fromWei(await wbtcTrBContract.balanceOf(user1)) + " JWBB");
-    // console.log("CErc20 WBTC.e balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(QIDAI).call()) + " WBTC.e");
-    console.log("JAave WBTC.e balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(avWBTC_Address)) + " avWBTC");
+    // console.log("CErc20 WBTC balance: " + fromWei8Dec(await wbtcContract.methods.balanceOf(QIDAI).call()) + " WBTC");
+    console.log("JAave WBTC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWBCT_Address)) + " aWBTC");
     console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(2, 0)));
     trAddresses = await jAaveContract.trancheAddresses(2); //.cTokenAddress;
     trPars = await jAaveContract.trancheParameters(2);
@@ -217,12 +217,12 @@ contract("WBTC.e JAave", function (accounts) {
 
   it("user1 redeems token wbtcTrA", async function () {
     oldBal = fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call());
-    console.log("User1 Wbtc balance: "+ oldBal + " WBTC.e");
+    console.log("User1 Wbtc balance: "+ oldBal + " WBTC");
     bal = await wbtcTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: "+ fromWei(bal) + " JWBA");
     tot = await wbtcTrAContract.totalSupply();
     console.log("trA tokens total: "+ fromWei(tot) + " JWBA");
-    console.log("JAave avWBTC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(avWBTC_Address)) + " avWBTC");
+    console.log("JAave aWBTC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(aWBCT_Address)) + " aWBTC");
     tx = await wbtcTrAContract.approve(jAaveContract.address, bal, {from: user1});
     trPar = await jAaveContract.trancheParameters(2);
     console.log("TrA price: " + fromWei(trPar[2].toString()));
@@ -232,11 +232,11 @@ contract("WBTC.e JAave", function (accounts) {
     tx = await jAaveContract.redeemTrancheAToken(2, bal, {from: user1});
 
     newBal = fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call());
-    console.log("User1 New Wbtc balance: "+ newBal + " WBTC.e");
+    console.log("User1 New Wbtc balance: "+ newBal + " WBTC");
     bal = await wbtcTrAContract.balanceOf(user1);
     console.log("User1 trA tokens: "+ fromWei(bal) + " JWBA");
-    console.log("User1 trA interest: "+ (newBal - oldBal) + " WBTC.e");
-    console.log("JAave new avWBTC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(avWBTC_Address)) + " avWBTC");
+    console.log("User1 trA interest: "+ (newBal - oldBal) + " WBTC");
+    console.log("JAave new aWBTC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(aWBCT_Address)) + " aWBTC");
     console.log("JAave TrA Value: " + fromWei8Dec(await jAaveContract.getTrAValue(2)));
     console.log("JAave total Value: " + fromWei8Dec(await jAaveContract.getTotalValue(2)));
 
@@ -258,10 +258,10 @@ contract("WBTC.e JAave", function (accounts) {
 
   it("user1 redeems token wbtcTrB", async function () {
     oldBal = fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call());
-    console.log("User1 Wbtc balance: "+ oldBal + " WBTC.e");
+    console.log("User1 Wbtc balance: "+ oldBal + " WBTC");
     bal = await wbtcTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: "+ fromWei(bal) + " JWBB");
-    console.log("JAave avWBTC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(avWBTC_Address)) + " avWBTC");
+    console.log("JAave aWBTC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(aWBCT_Address)) + " aWBTC");
     tx = await wbtcTrBContract.approve(jAaveContract.address, bal, {from: user1});
     console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(2, 0)));
     console.log("TrB value: " +  fromWei8Dec(await jAaveContract.getTrBValue(2)));
@@ -270,11 +270,11 @@ contract("WBTC.e JAave", function (accounts) {
     tx = await jAaveContract.redeemTrancheBToken(2, bal, {from: user1});
     
     newBal = fromWei8Dec(await wbtcContract.methods.balanceOf(user1).call());
-    console.log("User1 New Wbtc balance: "+ newBal + " WBTC.e");
+    console.log("User1 New Wbtc balance: "+ newBal + " WBTC");
     bal = await wbtcTrBContract.balanceOf(user1);
     console.log("User1 trB tokens: "+ fromWei(bal) + " JWBB");
-    console.log("User1 trB interest: "+ (newBal - oldBal) + " WBTC.e");
-    console.log("JAave new avWBTC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(avWBTC_Address)) + " avWBTC");
+    console.log("User1 trB interest: "+ (newBal - oldBal) + " WBTC");
+    console.log("JAave new aWBTC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(aWBCT_Address)) + " aWBTC");
     console.log("TrA Value: " + fromWei8Dec(await jAaveContract.getTrAValue(2)));
     console.log("TrB value: " +  fromWei8Dec(await jAaveContract.getTrBValue(2)));
     console.log("JAave total Value: " + fromWei8Dec(await jAaveContract.getTotalValue(2)));
