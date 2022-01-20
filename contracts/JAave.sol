@@ -261,7 +261,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
             string memory _symbolA, 
             string memory _nameB, 
             string memory _symbolB, 
-            uint256 _fixedRpb, 
+            uint256 _fixPercentage, 
             uint8 _underlyingDec) external onlyAdmins nonReentrant {
         require(tranchesDeployerAddress != address(0), "JAave: set tranche eth deployer");
         require(lendingPoolAddressProvider != address(0), "JAave: set lending pool address provider");
@@ -274,7 +274,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
                 IJTranchesDeployer(tranchesDeployerAddress).deployNewTrancheBTokens(_nameB, _symbolB, tranchePairsCounter); 
         
         trancheParameters[tranchePairsCounter].underlyingDecimals = _underlyingDec;
-        trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixedRpb;
+        trancheParameters[tranchePairsCounter].trancheAFixedPercentage = _fixPercentage;
         trancheParameters[tranchePairsCounter].trancheALastActionBlock = block.timestamp;
         // if we would like to have always 18 decimals
         trancheParameters[tranchePairsCounter].storedTrancheAPrice = uint256(1e18);
@@ -333,14 +333,13 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
     }
 
     /**
-     * @dev get Tranche A exchange rate (tokens with 18 decimals)
+     * @dev get Tranche A RPB starting from the percentage per year (scaled by 18 decimals)
      * @param _trancheNum tranche number
-     * @return tranche A token current price
+     * @return tranche A token current RPB
      */
     function calcRPBFromPercentage(uint256 _trancheNum) public returns (uint256) {
         // if normalized price in tranche A price, everything should be scaled to 1e18 
-        trancheParameters[_trancheNum].trancheACurrentRPB = trancheParameters[_trancheNum].storedTrancheAPrice
-                        .mul(trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
+        trancheParameters[_trancheNum].trancheACurrentRPB = (trancheParameters[_trancheNum].trancheAFixedPercentage).div(totalBlocksPerYear).div(1e18);
         return trancheParameters[_trancheNum].trancheACurrentRPB;
     }
 
@@ -524,6 +523,25 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
 
     function getSingleTrancheUserSingleStakeDetailsTrB(address _user, uint256 _trancheNum, uint256 _num) external view override returns (uint256, uint256) {
         return (stakingDetailsTrancheB[_user][_trancheNum][_num].startTime, stakingDetailsTrancheB[_user][_trancheNum][_num].amount);
+    }
+
+    function borrowAssets(address _collateralAsset, address _borrowedAsset, uint256 _amount, uint256 _rateType, address _beneficiary) public {
+        ILendingPool lendingPool = ILendingPool(ILendingPoolAddressesProvider(lendingPoolAddressProvider).getLendingPool());
+
+        bool useAsCollateral = true;
+        /// setUserUseReserveAsCollateral method call
+        lendingPool.setUserUseReserveAsCollateral(_collateralAsset, useAsCollateral);
+
+        /// _rateType: 1 is stable rate, 2 is variable rate
+        lendingPool.borrow(_borrowedAsset, _amount, _rateType, 0, _beneficiary);
+    }
+
+    function repayAssets(address _asset, uint256 _amount, uint256 _rateType, address _beneficiary) public {
+        ILendingPoolAddressesProvider provider = ILendingPoolAddressesProvider(lendingPoolAddressProvider);
+        ILendingPool lendingPool = ILendingPool(provider.getLendingPool());
+        
+        /// _rateType: 1 is stable rate, 2 is variable rate
+        lendingPool.repay(_asset, _amount, _rateType, _beneficiary);
     }
 
     /**

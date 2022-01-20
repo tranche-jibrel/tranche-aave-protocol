@@ -22,7 +22,8 @@ contract WETHGateway is IWETHGateway, Ownable {
   constructor(address _weth, address _jAaveAddress) {
     jAaveAddress = _jAaveAddress;
     WETH = IWETH(_weth);
-    IWETH(_weth).approve(_jAaveAddress, type(uint256).max);
+    bool app = IWETH(_weth).approve(_jAaveAddress, type(uint256).max);
+    require(app, "!approved");
   }
 
   /**
@@ -39,7 +40,8 @@ contract WETHGateway is IWETHGateway, Ownable {
   function depositETH() external payable override {
     WETH.deposit{value: msg.value}();
     uint256 wethBalance = IERC20(address(WETH)).balanceOf(address(this));
-    IERC20(address(WETH)).transfer(jAaveAddress, wethBalance);
+    bool sent = IERC20(address(WETH)).transfer(jAaveAddress, wethBalance);
+    require(sent, "!deposit");
   }
 
   /**
@@ -59,7 +61,8 @@ contract WETHGateway is IWETHGateway, Ownable {
    * @param _amount amount to send
    */
   function emergencyTokenTransfer(address _token, address _to, uint256 _amount) external onlyOwner {
-    IERC20(_token).transfer(_to, _amount);
+    bool sent = IERC20(_token).transfer(_to, _amount);
+    require(sent, "!emergency");
   }
 
   /**
