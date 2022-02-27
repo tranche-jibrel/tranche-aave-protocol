@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { deployProxy, upgradeProxy } = require('@openzeppelin/truffle-upgrades');
 
-var myERC20 = artifacts.require("myERC20")
 var JFeesCollector = artifacts.require("JFeesCollector");
 var JAdminTools = artifacts.require("JAdminTools");
 
@@ -13,12 +12,6 @@ var JTrancheBToken = artifacts.require('JTrancheBToken');
 
 // var WETHToken = artifacts.require('WETH9_');
 var WETHGateway = artifacts.require('WETHGateway');
-
-var PriceHelper = artifacts.require('./PriceHelper');
-var MarketHelper = artifacts.require('./MarketHelper');
-var IncentivesController = artifacts.require('./IncentivesController');
-
-var Chainlink1 = artifacts.require('Chainlink1');
 
 //const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -37,15 +30,10 @@ const aUSDT_Address = '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811';
 const LendingPoolAddressesProvider = '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5';
 const aaveIncentiveController = '0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5';
 
-const MYERC20_TOKEN_SUPPLY = 20000000;
-
 module.exports = async (deployer, network, accounts) => {
 
   if (network == "development") {
     const factoryOwner = accounts[0];
-
-    const mySLICEinstance = await deployProxy(myERC20, [MYERC20_TOKEN_SUPPLY], { from: factoryOwner });
-    console.log('mySLICE Deployed: ', mySLICEinstance.address);
 
     const JATinstance = await deployProxy(JAdminTools, [], { from: factoryOwner });
     console.log('JAdminTools Deployed: ', JATinstance.address);
@@ -121,22 +109,6 @@ module.exports = async (deployer, network, accounts) => {
     console.log("USDT Tranche B Token Address: " + UsdtTrB.address);
 
     await JAinstance.setTrancheDeposit(4, true);
-
-    const myChainlink1Inst = await deployProxy(Chainlink1, [], { from: factoryOwner });
-    console.log('myChainlink1 Deployed: ', myChainlink1Inst.address);
-
-    const myPriceHelperInst = await deployProxy(PriceHelper, [], { from: factoryOwner });
-    console.log('myPriceHelper Deployed: ', myPriceHelperInst.address);
-
-    const myMktHelperinstance = await deployProxy(MarketHelper, [], { from: factoryOwner });
-    console.log('myMktHelperinstance Deployed: ', myMktHelperinstance.address);
-
-    const JIController = await deployProxy(IncentivesController, [mySLICEinstance.address, myMktHelperinstance.address, myPriceHelperInst.address], { from: factoryOwner });
-    console.log("SIRs address: " + JIController.address);
-
-    await myPriceHelperInst.setControllerAddress(JIController.address, { from: factoryOwner })
-
-    await JAinstance.setIncentivesControllerAddress(JIController.address, { from: factoryOwner });
 
   } else if (network == "kovan") {
     let {
@@ -248,16 +220,6 @@ module.exports = async (deployer, network, accounts) => {
     await JAinstance.addTrancheToProtocol(TRANCHE_8_TOKEN_ADDRESS, TRANCHE_8_ATOKEN_ADDRESS, "Tranche A - Aave WETH", "aaWETH", "Tranche B - Aave WETH", "baWETH", web3.utils.toWei("0.01", "ether"), 18, { from: factoryOwner });
     await JAinstance.setTrancheDeposit(7, true, { from: factoryOwner });
     console.log('added tranche 8');
-
-    if (!MOCK_INCENTIVE_CONTROLLER) {
-      const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
-      console.log("MOCK_INCENTIVE_CONTROLLER " + JIController.address);
-      await JAinstance.setIncentivesControllerAddress(JIController.address);
-      console.log('incentive controller setup')
-    } else {
-      await JAinstance.setIncentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
-      console.log('incentive controller setup')
-    }
 
     trParams = await JAinstance.trancheAddresses(0);
     let tranche1A = await JTrancheAToken.at(trParams.ATrancheAddress);
@@ -425,16 +387,6 @@ module.exports = async (deployer, network, accounts) => {
     await JAinstance.setTrancheDeposit(2, true, { from: factoryOwner });
     console.log('added tranche 3');
 
-    if (!MOCK_INCENTIVE_CONTROLLER) {
-      const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
-      console.log("MOCK_INCENTIVE_CONTROLLER " + JIController.address);
-      await JAinstance.setIncentivesControllerAddress(JIController.address);
-      console.log('incentive controller setup')
-    } else {
-      await JAinstance.setIncentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
-      console.log('incentive controller setup')
-    }
-
     trParams = await JAinstance.trancheAddresses(0);
     let tranche1A = await JTrancheAToken.at(trParams.ATrancheAddress);
     let tranche1B = await JTrancheBToken.at(trParams.BTrancheAddress);
@@ -544,16 +496,6 @@ module.exports = async (deployer, network, accounts) => {
     await JAinstance.addTrancheToProtocol(AAVE_ADDRESS, avAAVE_ADDRESS, "Tranche A - Aave Avalanche AAVE", "aavAAVE", "Tranche B - Aave Avalanche AAVE", "bavAAVE", web3.utils.toWei("0.00", "ether"), 18, { from: factoryOwner });
     await JAinstance.setTrancheDeposit(6, true, { from: factoryOwner });
     console.log('added tranche 7');
-
-    if (!MOCK_INCENTIVE_CONTROLLER) {
-      const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
-      console.log("MOCK_INCENTIVE_CONTROLLER " + JIController.address);
-      await JAinstance.setIncentivesControllerAddress(JIController.address);
-      console.log('incentive controller setup')
-    } else {
-      await JAinstance.setIncentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
-      console.log('incentive controller setup')
-    }
 
     trParams = await JAinstance.trancheAddresses(0);
     let tranche1A = await JTrancheAToken.at(trParams.ATrancheAddress);
@@ -694,16 +636,6 @@ module.exports = async (deployer, network, accounts) => {
     await JAinstance.addTrancheToProtocol(TRANCHE_8_TOKEN_ADDRESS, TRANCHE_8_ATOKEN_ADDRESS, "Tranche A - Aave BUSD", "aaBUSD", "Tranche B - Aave BUSD", "baBUSD", web3.utils.toWei("0.0008", "ether"), 18, { from: factoryOwner });
     await JAinstance.setTrancheDeposit(7, true, { from: factoryOwner });
     console.log('added tranche 8');
-
-    if (!MOCK_INCENTIVE_CONTROLLER) {
-      const JIController = await deployProxy(IncentivesController, [], { from: factoryOwner });
-      console.log("MOCK_INCENTIVE_CONTROLLER " + JIController.address);
-      await JAinstance.setIncentivesControllerAddress(JIController.address);
-      console.log('incentive controller setup')
-    } else {
-      await JAinstance.setIncentivesControllerAddress(MOCK_INCENTIVE_CONTROLLER);
-      console.log('incentive controller setup')
-    }
 
     trParams = await JAinstance.trancheAddresses(0);
     let tranche1A = await JTrancheAToken.at(trParams.ATrancheAddress);

@@ -28,7 +28,6 @@ const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 const JTrancheAToken = artifacts.require('JTrancheAToken');
 const JTrancheBToken = artifacts.require('JTrancheBToken');
 
-// const MYERC20_TOKEN_SUPPLY = 5000000;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const USDC_HOLDER = "0xe2644b0dc1b96C101d95421E95789eF6992B0E6A";
 const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
@@ -173,21 +172,11 @@ contract("USDC JAave", function (accounts) {
     // console.log("JAave Price: " + await jCompHelperContract.getJAavePriceHelper(1));
     console.log("JAave TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));
-
-    stkDetails = await jAaveContract.stakingDetailsTrancheA(user1, 3, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it("user1 buys some other token usdcTrA", async function () {
     tx = await usdcContract.methods.approve(jAaveContract.address, toWei6Dec(500)).send({from: user1});
     tx = await jAaveContract.buyTrancheAToken(3, toWei6Dec(500), {from: user1});
-
-    console.log("staker counter trA: " + (await jAaveContract.stakeCounterTrA(user1, 3)).toString())
-    stkDetails = await jAaveContract.stakingDetailsTrancheA(user1, 3, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
-
-    stkDetails = await jAaveContract.stakingDetailsTrancheA(user1, 3, 2);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it("user1 buys some token usdcTrB", async function () {
@@ -214,10 +203,6 @@ contract("USDC JAave", function (accounts) {
     console.log("JAave TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
     console.log("TrB value: " + fromWei6Dec(await jAaveContract.getTrBValue(3)));
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));
-
-    console.log("staker counter trB: " + (await jAaveContract.stakeCounterTrB(user1, 3)).toString())
-    stkDetails = await jAaveContract.stakingDetailsTrancheB(user1, 3, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   });
 
   it('time passes...', async function () {
@@ -253,12 +238,6 @@ contract("USDC JAave", function (accounts) {
     console.log("JAave new aUSDC balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     console.log("JAave TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));
-
-    console.log("staker counter trA: " + (await jAaveContract.stakeCounterTrA(user1, 3)).toString())
-    stkDetails = await jAaveContract.stakingDetailsTrancheA(user1, 3, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
-    stkDetails = await jAaveContract.stakingDetailsTrancheA(user1, 3, 2);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   }); 
 
   it('time passes...', async function () {
@@ -292,10 +271,6 @@ contract("USDC JAave", function (accounts) {
     console.log("TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
     console.log("TrB value: " +  fromWei6Dec(await jAaveContract.getTrBValue(3)));
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));
-
-    console.log("staker counter trB: " + (await jAaveContract.stakeCounterTrB(user1, 3)).toString())
-    stkDetails = await jAaveContract.stakingDetailsTrancheB(user1, 3, 1);
-    console.log("startTime: " + stkDetails[0].toString() + ", amount: " + stkDetails[1].toString() )
   }); 
 
   it('calling unfrequently functions', async function () {
