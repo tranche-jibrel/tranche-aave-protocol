@@ -28,7 +28,8 @@ const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 const JTrancheAToken = artifacts.require('JTrancheAToken');
 const JTrancheBToken = artifacts.require('JTrancheBToken');
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const {ZERO_ADDRESS} = constants;
+
 const DAI_HOLDER = "0x38720D56899d46cAD253d08f7cD6CC89d2c83190";
 const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
 const aDAI_Address = '0x028171bCA77440897B824Ca71D1c56caC55b68A3';

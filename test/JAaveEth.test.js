@@ -28,7 +28,8 @@ var JTrancheBToken = artifacts.require('JTrancheBToken');
 
 const aaveIncentiveController = '0xd784927Ff2f95ba542BfC824c8a8a98F3495f6b5';
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const {ZERO_ADDRESS} = constants;
+
 const ETH_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 const WETH_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const aWETH_Address = '0x030bA81f1c18d280636F32af80b9AAd02Cf0854e';

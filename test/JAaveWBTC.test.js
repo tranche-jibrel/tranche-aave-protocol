@@ -28,7 +28,8 @@ const JTranchesDeployer = artifacts.require('JTranchesDeployer');
 const JTrancheAToken = artifacts.require('JTrancheAToken');
 const JTrancheBToken = artifacts.require('JTrancheBToken');
 
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const {ZERO_ADDRESS} = constants;
+
 const WBTC_HOLDER = "0x47cC445c8845F7186A1eaB87Ae5D60CDA69b630c";
 const WBTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
 const aWBCT_Address = '0x9ff58f4fFB29fA2266Ab25e75e2A8b3503311656';
