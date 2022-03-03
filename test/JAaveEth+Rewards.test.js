@@ -166,7 +166,7 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log("JAave total Value: " + fromWei(await jAaveContract.getTotalValue(0)));
     console.log("TrB total supply: " + fromWei(await ethTrBContract.totalSupply()));
     console.log("JAave TrA Value: " + fromWei(await jAaveContract.getTrAValue(0)));
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1, toWei("10000"))));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1)));
     tx = await jAaveContract.buyTrancheBToken(0, toWei(10), {from: user1, value: toWei(10)});
 
     balTrB = await ethTrBContract.balanceOf(user1)
@@ -174,7 +174,7 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log("User1 trB tokens: " + fromWei(await ethTrBContract.balanceOf(user1)) + " JEB");
     console.log("avDAI ETH balance: " + fromWei(await web3.eth.getBalance(aWETH_Address)) + " ETH");
     console.log("JAave ETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1)));
     trAddresses = await jAaveContract.trancheAddresses(0);
     trPars = await jAaveContract.trancheParameters(0);
     trPar = await jAaveContract.trancheParameters(0);
@@ -525,7 +525,7 @@ contract("JAave Avax & rewards", function (accounts) {
     console.log("User1 trB tokens: " + fromWei(bal) + " JEB");
     console.log("JAave aETH balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aWETH_Address)) + " aETH");
     tx = await ethTrBContract.approve(jAaveContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1)));
     console.log("TrB value: " + fromWei(await jAaveContract.getTrBValue(0)));
 
     tx = await jAaveContract.redeemTrancheBToken(0, bal, {from: user1});

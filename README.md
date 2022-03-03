@@ -61,13 +61,8 @@ Aave tranches are implemented on Avalanche.
     </thead>
     <tbody>
         <tr>
-            <td>AVAXGateway</td>
-            <td><code>77.27%</code></td>
-            <td>---</td>
-        </tr>
-        <tr>
             <td>JAave</td>
-            <td><code>95.35%</code></td>
+            <td><code>93.39%</code></td>
             <td>---</td>
         </tr>
         <tr>
@@ -92,18 +87,23 @@ Aave tranches are implemented on Avalanche.
         </tr>
         <tr>
             <td>IncentivesController</td>
-            <td><code>68.91%</code></td>
+            <td><code>65.54%</code></td>
             <td>99% in https://github.com/tranche-jibrel/tranche-rewards</td>
         </tr>
         <tr>
             <td>MarketHelper</td>
-            <td><code>90.24%</code></td>
+            <td><code>95.12%</code></td>
             <td>98% in https://github.com/tranche-jibrel/tranche-rewards</td>
         </tr>
         <tr>
             <td>PriceHelper</td>
             <td><code>30.43%</code></td>
             <td>96% in https://github.com/tranche-jibrel/tranche-rewards</td>
+        </tr>
+        <tr>
+            <td>WETHGateway</td>
+            <td><code>58.82%</code></td>
+            <td>---</td>
         </tr>
     </tbody>
   </table>
@@ -138,7 +138,7 @@ Aave tranches is ready for SIRs system.
         </tr>
         <tr>
             <td>JAave</td>
-            <td><code>22.08</code></td>
+            <td><code>21.97</code></td>
             <td>Core contract protocol (implementation). It is responsible to make all actions to give the exact amount of tranche token to users, connecting with Aave to have interest rates and other informations to give tokens the price they should have block by block. It claims extra token from Aave, sending them to Fees collector contract, that changes all fees and extra tokens into new interests for token holders. It also opens new tranches, and, via Tranche Deployer contract, it deploys new tranche tokens.</td>
         </tr>
         <tr>

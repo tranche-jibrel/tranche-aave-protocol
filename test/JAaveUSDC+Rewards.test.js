@@ -196,7 +196,7 @@ contract("JAave USDC & rewards", function (accounts) {
     console.log("JAave total Value: " + fromWei6Dec(await jAaveContract.getTotalValue(3)));
     console.log("TrB total supply: " + fromWei6Dec(await usdcTrBContract.totalSupply()));
     console.log("JAave TrA Value: " + fromWei6Dec(await jAaveContract.getTrAValue(3)));
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3, toWei6Dec("10000"))));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3)));
     tx = await usdcContract.methods.approve(jAaveContract.address, toWei6Dec(1000)).send({from: user1});
     tx = await jAaveContract.buyTrancheBToken(3, toWei6Dec(1000), {from: user1});
 
@@ -205,7 +205,7 @@ contract("JAave USDC & rewards", function (accounts) {
     console.log("User1 trB tokens: " + fromWei6Dec(await usdcTrBContract.balanceOf(user1)) + " JUBB");
     console.log("CErc20 USDC balance: " + fromWei6Dec(await usdcContract.methods.balanceOf(aUSDC_Address).call()) + " USDC");
     console.log("JAave USDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3, 0)));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3)));
     trAddresses = await jAaveContract.trancheAddresses(3);
     trPars = await jAaveContract.trancheParameters(3);
     trPar = await jAaveContract.trancheParameters(3);
@@ -564,7 +564,7 @@ contract("JAave USDC & rewards", function (accounts) {
     console.log("User1 trB tokens: " + fromWei(bal) + " JUBB");
     console.log("JAave aUSDC balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aUSDC_Address)) + " aUSDC");
     tx = await usdcTrBContract.approve(jAaveContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3, 0)));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(3)));
     console.log("TrB value: " + fromWei6Dec(await jAaveContract.getTrBValue(3)));
 
     tx = await jAaveContract.redeemTrancheBToken(3, bal, {from: user1});
