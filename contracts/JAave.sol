@@ -367,44 +367,28 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
     /**
      * @dev get Tranche B exchange rate
      * @param _trancheNum tranche number
-     * @param _newAmount new amount entering tranche B (underlying token decimals)
      * @return tbPrice tranche B token current price
      */
-    function getTrancheBExchangeRate(uint256 _trancheNum, uint256 _newAmount) public view returns (uint256 tbPrice) {
+    function getTrancheBExchangeRate(uint256 _trancheNum) public view returns (uint256 tbPrice) {
         // set amount of tokens to be minted via taToken price
         // Current tbDai price = ((aDai-(aSupply X taPrice)) / bSupply)
         // where: aDai = How much aDai we hold in the protocol
         // aSupply = Total number of taDai in protocol
         // taPrice = taDai / Dai price
         // bSupply = Total number of tbDai in protocol
-        uint256 totTrBValue;
-
+        
         uint256 totBSupply = IERC20Upgradeable(trancheAddresses[_trancheNum].BTrancheAddress).totalSupply(); // 18 decimals
-        // if normalized price in tranche A price, everything should be scaled to 1e18 
-        uint256 underlyingDec = uint256(trancheParameters[_trancheNum].underlyingDecimals);
-        uint256 normAmount = _newAmount;
-        if (underlyingDec < 18)
-            normAmount = _newAmount.mul(10 ** uint256(18).sub(underlyingDec));
-        uint256 newBSupply = totBSupply.add(normAmount); // 18 decimals
-
-        uint256 totProtValue = getTotalValue(_trancheNum).add(_newAmount); //underlying token decimals
-        uint256 totTrAValue = getTrAValue(_trancheNum); //underlying token decimals
-        if (totProtValue >= totTrAValue)
-            totTrBValue = totProtValue.sub(totTrAValue); //underlying token decimals
-        else
-            totTrBValue = 0;
-        // if normalized price in tranche A price, everything should be scaled to 1e18 
-        if (underlyingDec < 18 && totTrBValue > 0) {
-            totTrBValue = totTrBValue.mul(10 ** (uint256(18).sub(underlyingDec)));
-        }
-
-        if (totTrBValue > 0 && newBSupply > 0) {
+        if (totBSupply > 0) {
+            uint256 totProtValue = getTotalValue(_trancheNum); //underlying token decimals
+            uint256 totTrAValue = getTrAValue(_trancheNum); //underlying token decimals
+            uint256 totTrBValue = totProtValue.sub(totTrAValue); //underlying token decimals
             // if normalized price in tranche A price, everything should be scaled to 1e18 
-            tbPrice = totTrBValue.mul(1e18).div(newBSupply);
-        } else
-            // if normalized price in tranche A price, everything should be scaled to 1e18 
+            uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
+            totTrBValue = totTrBValue.mul(10 ** diffDec);
+            tbPrice = totTrBValue.mul(1e18).div(totBSupply);
+        } else {
             tbPrice = uint256(1e18);
-
+        }
         return tbPrice;
     }
 
@@ -495,7 +479,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         // if normalized price in tranche B price, everything should be scaled to 1e18 
         uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
         uint256 normAmount = _amount.mul(10 ** diffDec);
-        uint256 tbAmount = normAmount.mul(1e18).div(getTrancheBExchangeRate(_trancheNum, _amount));
+        uint256 tbAmount = normAmount.mul(1e18).div(getTrancheBExchangeRate(_trancheNum));
         uint256 prevAaveTokenBalance = getTokenBalance(trancheAddresses[_trancheNum].aTokenAddress);
         address lendingPool = ILendingPoolAddressesProvider(lendingPoolAddressProvider).getLendingPool();
         address _tokenAddr = trancheAddresses[_trancheNum].buyerCoinAddress;
@@ -538,7 +522,7 @@ contract JAave is OwnableUpgradeable, ReentrancyGuardUpgradeable, JAaveStorageV2
         // update tranche A price
         setTrancheAExchangeRate(_trancheNum);
         // get tranche B exchange rate
-        uint256 tbAmount = _amount.mul(getTrancheBExchangeRate(_trancheNum, 0)).div(1e18);
+        uint256 tbAmount = _amount.mul(getTrancheBExchangeRate(_trancheNum)).div(1e18);
         uint256 diffDec = uint256(18).sub(uint256(trancheParameters[_trancheNum].underlyingDecimals));
         uint256 normAmount = tbAmount.div(10 ** diffDec);
         // not sure about this, but it should be checked

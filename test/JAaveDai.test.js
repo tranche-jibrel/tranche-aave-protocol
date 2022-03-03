@@ -162,14 +162,14 @@ contract("DAI JAave", function (accounts) {
     console.log("JAave total Value: " + fromWei(await jAaveContract.getTotalValue(1)));
     console.log("TrB total supply: " + fromWei(await daiTrBContract.totalSupply()));
     console.log("JAave TrA Value: " + fromWei(await jAaveContract.getTrAValue(1)));
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1, toWei("10000"))));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1)));
     tx = await daiContract.methods.approve(jAaveContract.address, toWei(1000)).send({from: user1});
     tx = await jAaveContract.buyTrancheBToken(1, toWei(1000), {from: user1});
     console.log("User1 New DAI balance: " + fromWei(await daiContract.methods.balanceOf(user1).call()) + " DAI");
     console.log("User1 trB tokens: " + fromWei(await daiTrBContract.balanceOf(user1)) + " DTB");
     // console.log("CErc20 DAI balance: " + fromWei(await daiContract.methods.balanceOf(QIDAI).call()) + " DAI");
     console.log("JAave DAI balance: " + fromWei8Dec(await jAaveContract.getTokenBalance(aDAI_Address)) + " aDAI");
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1)));
     trAddresses = await jAaveContract.trancheAddresses(1); //.cTokenAddress;
     trPars = await jAaveContract.trancheParameters(1);
     trPar = await jAaveContract.trancheParameters(1);
@@ -230,7 +230,7 @@ contract("DAI JAave", function (accounts) {
     console.log("User1 trB tokens: "+ fromWei(bal) + " DTB");
     console.log("JAave aDAI balance: "+ fromWei8Dec(await jAaveContract.getTokenBalance(aDAI_Address)) + " aDAI");
     tx = await daiTrBContract.approve(jAaveContract.address, bal, {from: user1});
-    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1, 0)));
+    console.log("TrB price: " + fromWei(await jAaveContract.getTrancheBExchangeRate(1)));
     console.log("TrB value: " +  fromWei(await jAaveContract.getTrBValue(1)));
     console.log(await jATContract.isAdmin(jAaveContract.address));
 
